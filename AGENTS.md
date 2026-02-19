@@ -117,7 +117,10 @@ API docs in the README are auto-generated from JSDoc in `src/definitions.ts`. **
 
 ## Versioning
 
-The plugin major version follows the Capacitor major version (e.g., plugin v8 for Capacitor 8). Ship breaking changes only with a Capacitor major migration.
+- New plugins must start at version `8.0.0` (Capacitor 8 baseline).
+- By default, ship and maintain Capacitor 8 support first.
+- Backward compatibility for older Capacitor majors is supported on demand.
+- Ship breaking changes only with a Capacitor major migration.
 
 ## Changelog
 

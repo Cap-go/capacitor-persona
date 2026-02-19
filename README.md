@@ -20,6 +20,7 @@
 - [ ] Replace all `{{PLACEHOLDER}}` values in this README.
 - [ ] Replace `{{PLUGIN_REF_SLUG}}` in Capgo CTA links (example: `native_audio`).
 - [ ] Replace all `__AI_KEYWORD_*__` entries in `package.json`.
+- [ ] Update the compatibility table for this plugin.
 - [ ] Update `src/definitions.ts` with the real public API and JSDoc.
 - [ ] Run `bun run docgen` and review generated API docs below.
 - [ ] Confirm examples in this file run against the real implementation.
@@ -50,6 +51,19 @@
 
 - `{{OUT_OF_SCOPE_1}}`
 - `{{OUT_OF_SCOPE_2}}`
+
+## Compatibility
+
+| Plugin version | Capacitor compatibility | Maintained |
+| -------------- | ----------------------- | ---------- |
+| v8.\*.\*       | v8.\*.\*                | ✅          |
+| v7.\*.\*       | v7.\*.\*                | On demand   |
+| v6.\*.\*       | v6.\*.\*                | On demand   |
+
+Policy:
+
+- New plugins start at version `8.0.0` (Capacitor 8 baseline).
+- Backward compatibility for older Capacitor majors is supported on demand.
 
 ## Quick Start (Template Authors)
 

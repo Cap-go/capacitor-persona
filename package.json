@@ -26,11 +26,11 @@
   },
   "homepage": "https://github.com/Cap-go/capacitor-plugin-template",
   "keywords": [
-    "capacitor",
-    "plugin",
-    "native",
-    "template",
-    "capgo"
+    "__AI_KEYWORD_PRIMARY__",
+    "__AI_KEYWORD_SECONDARY__",
+    "__AI_KEYWORD_USE_CASE__",
+    "__AI_KEYWORD_PLATFORM__",
+    "__AI_KEYWORD_VENDOR__"
   ],
   "scripts": {
     "init-plugin": "./scripts/init-plugin.sh",

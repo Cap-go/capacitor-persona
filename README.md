@@ -1,34 +1,118 @@
 # @capgo/capacitor-plugin-template
  <a href="https://capgo.app/"><img src='https://raw.githubusercontent.com/Cap-go/capgo/main/assets/capgo_banner.png' alt='Capgo - Instant updates for capacitor'/></a>
 
-Capgo Capacitor plugin template for quickly bootstrapping new plugins with iOS, Android, Web, CI, and a local example app.
+> Template README. Replace every `{{PLACEHOLDER}}` value before releasing.
 
-## Quick Start
+## Snapshot
+
+- **Plugin name:** `{{PLUGIN_DISPLAY_NAME}}`
+- **One-line value:** `{{PLUGIN_TAGLINE}}`
+- **Maintainer:** `{{MAINTAINER_OR_TEAM}}`
+- **Status:** `{{alpha|beta|stable}}`
+
+## Pre-Release Checklist
+
+- [ ] Replace all `{{PLACEHOLDER}}` values in this README.
+- [ ] Replace all `__AI_KEYWORD_*__` entries in `package.json`.
+- [ ] Update `src/definitions.ts` with the real public API and JSDoc.
+- [ ] Run `bun run docgen` and review generated API docs below.
+- [ ] Confirm examples in this file run against the real implementation.
+- [ ] Set GitHub repo description to start with `Capacitor plugin for ...`.
+- [ ] Set GitHub repo homepage to `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`.
+- [ ] Open docs/website PR to add this plugin to plugin list + plugin tutorial.
+- [ ] Run `bun run verify` before publishing.
+
+## Problem & Scope
+
+### Why this plugin exists
+
+`{{WHAT_PAIN_POINT_IT_SOLVES}}`
+
+## Capgo Links
+
+- **Plugin docs URL:** `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`
+- **Plugin tutorial URL:** `{{PLUGIN_TUTORIAL_URL}}`
+- **Website/docs repo:** `https://github.com/Cap-go/capgo`
+
+### What it does
+
+- `{{CAPABILITY_1}}`
+- `{{CAPABILITY_2}}`
+- `{{CAPABILITY_3}}`
+
+### What it does not do
+
+- `{{OUT_OF_SCOPE_1}}`
+- `{{OUT_OF_SCOPE_2}}`
+
+## Quick Start (Template Authors)
 
 ```bash
 bun install
 bun run init-plugin your-plugin YourPlugin app.capgo.yourplugin
-bun run docgen
 bun run verify
 ```
 
-The `init-plugin` command updates package names, native class names, iOS/Android identifiers, and the local example app.
+The `init-plugin` command updates package names, native class names, iOS/Android identifiers, and the local example app wiring.
+
+## Public Launch (Required)
+
+### 1) Publish in Capgo GitHub org as public
+
+```bash
+gh repo create Cap-go/capacitor-{{PLUGIN_SLUG}} --public --source=. --remote=origin --push
+```
+
+If the repo already exists and is private:
+
+```bash
+gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} --visibility public --accept-visibility-change-consequences
+```
+
+### 2) Set GitHub description and homepage
+
+Description must always start with: `Capacitor plugin for ...`
+
+```bash
+gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} \
+  --description "Capacitor plugin for {{SHORT_USE_CASE}}." \
+  --homepage "https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/"
+```
+
+### 3) Open docs/website pull request
+
+Create a PR on `https://github.com/Cap-go/capgo` that includes:
+
+- Add plugin card/entry in website plugin list file: `{{WEBSITE_PLUGIN_LIST_FILE}}`
+- Add plugin documentation page: `{{WEBSITE_PLUGIN_DOC_FILE}}`
+- Add plugin tutorial page: `{{WEBSITE_PLUGIN_TUTORIAL_FILE}}`
+- Cross-link docs page and tutorial page
 
 ## Install
 
 ```bash
-bun add @capgo/capacitor-your-plugin
+bun add @capgo/capacitor-plugin-template
 bunx cap sync
 ```
 
-## Usage
+## Minimal Usage
 
 ```typescript
-import { YourPlugin } from '@capgo/capacitor-your-plugin';
+import { PluginTemplate } from '@capgo/capacitor-plugin-template';
 
-const result = await YourPlugin.echo({ value: 'Hello from Capgo' });
+const result = await PluginTemplate.echo({ value: 'Hello from Capgo' });
 console.log(result.value);
 ```
+
+## Integration Notes
+
+- **iOS:** `{{IOS_NOTES_OR_PERMISSIONS}}`
+- **Android:** `{{ANDROID_NOTES_OR_PERMISSIONS}}`
+- **Web:** `{{WEB_LIMITATIONS_OR_BEHAVIOR}}`
+
+## Example App
+
+The `example-app/` folder is linked via `file:..` and is intended for validating native wiring during development.
 
 ## API
 

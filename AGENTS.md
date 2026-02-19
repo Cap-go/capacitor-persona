@@ -18,6 +18,35 @@ bun run init-plugin downloader CapacitorDownloader app.capgo.downloader Cap-go
 
 This command renames JS/iOS/Android identifiers, package metadata, and native file paths.
 
+## Public Release Requirements (Mandatory)
+
+When shipping a new plugin from this template, the agent must perform all of the following:
+
+1. Publish the repository under `Cap-go` and make it public.
+2. Set the GitHub repository description and ensure it starts with:
+   - `Capacitor plugin for ...`
+3. Set the GitHub repository homepage to:
+   - `https://capgo.app/docs/plugins/<plugin-slug>/`
+4. Open a pull request on `https://github.com/Cap-go/capgo` to:
+   - Add the plugin to the website plugins list
+   - Add/update the plugin documentation page
+   - Add/update the plugin tutorial page
+
+Reference commands:
+
+```bash
+# Create public repo directly
+gh repo create Cap-go/capacitor-<plugin-slug> --public --source=. --remote=origin --push
+
+# Or switch existing private repo to public
+gh repo edit Cap-go/capacitor-<plugin-slug> --visibility public --accept-visibility-change-consequences
+
+# Enforce description + homepage
+gh repo edit Cap-go/capacitor-<plugin-slug> \
+  --description "Capacitor plugin for <what-it-does>." \
+  --homepage "https://capgo.app/docs/plugins/<plugin-slug>/"
+```
+
 ## Quick Start
 
 ```bash

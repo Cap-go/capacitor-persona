@@ -31,6 +31,8 @@ When shipping a new plugin from this template, the agent must perform all of the
    - Add the plugin to the website plugins list
    - Add/update the plugin documentation page
    - Add/update the plugin tutorial page
+5. Keep the README Capgo CTA header block and replace:
+   - `{{PLUGIN_REF_SLUG}}` with the tracking slug (example: `native_audio`)
 
 Reference commands:
 

@@ -1,6 +1,11 @@
 # @capgo/capacitor-plugin-template
  <a href="https://capgo.app/"><img src='https://raw.githubusercontent.com/Cap-go/capgo/main/assets/capgo_banner.png' alt='Capgo - Instant updates for capacitor'/></a>
 
+<div align="center">
+  <h2><a href="https://capgo.app/?ref=plugin_{{PLUGIN_REF_SLUG}}"> ➡️ Get Instant updates for your App with Capgo</a></h2>
+  <h2><a href="https://capgo.app/consulting/?ref=plugin_{{PLUGIN_REF_SLUG}}"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
+</div>
+
 > Template README. Replace every `{{PLACEHOLDER}}` value before releasing.
 
 ## Snapshot
@@ -13,6 +18,7 @@
 ## Pre-Release Checklist
 
 - [ ] Replace all `{{PLACEHOLDER}}` values in this README.
+- [ ] Replace `{{PLUGIN_REF_SLUG}}` in Capgo CTA links (example: `native_audio`).
 - [ ] Replace all `__AI_KEYWORD_*__` entries in `package.json`.
 - [ ] Update `src/definitions.ts` with the real public API and JSDoc.
 - [ ] Run `bun run docgen` and review generated API docs below.

@@ -120,6 +120,44 @@ Slug mapping rules:
 - Example: repo `https://github.com/Cap-go/capacitor-app-attest/` requires tutorial file
   `src/content/plugins-tutorials/en/capacitor-app-attest.md`.
 
+Starter snippets:
+
+`src/config/plugins.ts`
+
+```ts
+{
+  name: '@capgo/capacitor-{{PLUGIN_SLUG}}',
+  author: 'github.com/Cap-go',
+  description: 'Capacitor plugin for {{SHORT_USE_CASE}}',
+  href: 'https://github.com/Cap-go/capacitor-{{PLUGIN_SLUG}}/',
+  title: '{{PLUGIN_DISPLAY_NAME}}',
+  icon: ShieldCheckIcon,
+},
+```
+
+`astro.config.mjs` sidebar entry
+
+```ts
+{
+  label: '{{PLUGIN_DISPLAY_NAME}}',
+  items: [
+    { label: 'Overview', link: '/docs/plugins/<plugin-doc-slug>/' },
+    { label: 'Getting started', link: '/docs/plugins/<plugin-doc-slug>/getting-started' },
+    { label: 'iOS setup', link: '/docs/plugins/<plugin-doc-slug>/ios' },
+    { label: 'Android setup', link: '/docs/plugins/<plugin-doc-slug>/android' },
+  ],
+  collapsed: true,
+},
+```
+
+Required docs files:
+
+- `src/content/docs/docs/plugins/<plugin-doc-slug>/index.mdx`
+- `src/content/docs/docs/plugins/<plugin-doc-slug>/getting-started.mdx`
+- `src/content/docs/docs/plugins/<plugin-doc-slug>/ios.mdx` (if iOS-specific setup exists)
+- `src/content/docs/docs/plugins/<plugin-doc-slug>/android.mdx` (if Android-specific setup exists)
+- `src/content/plugins-tutorials/en/<plugin-repo-slug>.md`
+
 ## Install
 
 ```bash

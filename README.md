@@ -38,7 +38,7 @@
 
 - **Plugin docs URL:** `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`
 - **Plugin tutorial URL:** `{{PLUGIN_TUTORIAL_URL}}`
-- **Website/docs repo:** `https://github.com/Cap-go/capgo`
+- **Website/docs repo:** `https://github.com/Cap-go/website`
 
 ### What it does
 
@@ -87,7 +87,7 @@ gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} \
 
 ### 3) Open docs/website pull request
 
-Create a PR on `https://github.com/Cap-go/capgo` that includes:
+Create a PR on `https://github.com/Cap-go/website` that includes:
 
 - Add plugin card/entry in website plugin list file: `{{WEBSITE_PLUGIN_LIST_FILE}}`
 - Add plugin documentation page: `{{WEBSITE_PLUGIN_DOC_FILE}}`

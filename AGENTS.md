@@ -27,7 +27,7 @@ When shipping a new plugin from this template, the agent must perform all of the
    - `Capacitor plugin for ...`
 3. Set the GitHub repository homepage to:
    - `https://capgo.app/docs/plugins/<plugin-slug>/`
-4. Open a pull request on `https://github.com/Cap-go/capgo` to:
+4. Open a pull request on `https://github.com/Cap-go/website` to:
    - Add the plugin to the website plugins list
    - Add/update the plugin documentation page
    - Add/update the plugin tutorial page

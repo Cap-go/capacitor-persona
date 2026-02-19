@@ -1,6 +1,6 @@
 {
-  "appId": "app.capgo.plugintemplate.example",
-  "appName": "Plugin Template Example",
+  "appId": "app.capgo.persona.example",
+  "appName": "Persona Plugin Example",
   "webDir": "dist",
   "plugins": {
     "SplashScreen": {

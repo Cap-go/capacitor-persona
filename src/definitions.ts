@@ -1,44 +1,132 @@
+import type { PluginListenerHandle } from '@capacitor/core';
+
 /**
- * Input payload for the echo call.
+ * Environment where Persona should run.
  */
-export interface EchoOptions {
+export type PersonaEnvironment = 'production' | 'sandbox';
+
+/**
+ * Supported field value types for pre-writing Inquiry fields.
+ */
+export type PersonaFieldValue = string | number | boolean | string[];
+
+/**
+ * Serialized field value returned in Inquiry result callbacks.
+ */
+export type PersonaResultFieldValue = string | number | boolean | string[] | null;
+
+/**
+ * Input payload used to launch an Inquiry.
+ *
+ * Provide at least one of:
+ * - `templateId`
+ * - `templateVersion`
+ * - `inquiryId`
+ */
+export interface StartInquiryOptions {
   /**
-   * Arbitrary text that should be returned by native/web implementations.
+   * Existing Inquiry ID created on your backend.
    */
-  value: string;
+  inquiryId?: string;
+
+  /**
+   * Session token required when resuming an existing Inquiry.
+   */
+  sessionToken?: string;
+
+  /**
+   * Inquiry template ID from Persona Dashboard (recommended).
+   */
+  templateId?: string;
+
+  /**
+   * Inquiry template version ID from Persona Dashboard.
+   */
+  templateVersion?: string;
+
+  /**
+   * Your internal user reference.
+   */
+  referenceId?: string;
+
+  /**
+   * Persona account ID.
+   */
+  accountId?: string;
+
+  /**
+   * Persona environment.
+   *
+   * @default 'production'
+   */
+  environment?: PersonaEnvironment;
+
+  /**
+   * Locale override, for example `en`, `fr`, `es`.
+   */
+  locale?: string;
+
+  /**
+   * Optional fields pre-written into the Inquiry.
+   */
+  fields?: Record<string, PersonaFieldValue>;
 }
 
 /**
- * Echo response payload.
+ * Payload emitted when an Inquiry is completed.
  */
-export interface EchoResult {
-  /**
-   * The same value passed to `echo`.
-   */
-  value: string;
+export interface InquiryCompleteInfo {
+  inquiryId: string;
+  status: string;
+  fields: Record<string, PersonaResultFieldValue>;
 }
 
 /**
- * Plugin version payload.
+ * Payload emitted when an Inquiry is canceled.
  */
-export interface PluginVersionResult {
-  /**
-   * Version identifier returned by the platform implementation.
-   */
-  version: string;
+export interface InquiryCanceledInfo {
+  inquiryId?: string;
+  sessionToken?: string;
 }
 
 /**
- * Base API used by the template plugin.
+ * Payload emitted when an Inquiry errors.
  */
-export interface PluginTemplatePlugin {
+export interface InquiryErrorInfo {
+  error: string;
+  errorCode?: string;
+  cause?: string;
+}
+
+export interface PersonaPlugin {
   /**
-   * Echo a string to validate JS <-> native wiring.
+   * Launch a Persona Inquiry flow.
    */
-  echo(options: EchoOptions): Promise<EchoResult>;
+  startInquiry(options: StartInquiryOptions): Promise<void>;
 
   /**
-   * Returns the platform implementation version marker.
+   * Listen for successful completion.
    */
-  getPluginVersion(): Promise<PluginVersionResult>;
+  addListener(
+    eventName: 'inquiryComplete',
+    listenerFunc: (info: InquiryCompleteInfo) => void,
+  ): Promise<PluginListenerHandle>;
+
+  /**
+   * Listen for cancellation.
+   */
+  addListener(
+    eventName: 'inquiryCanceled',
+    listenerFunc: (info: InquiryCanceledInfo) => void,
+  ): Promise<PluginListenerHandle>;
+
+  /**
+   * Listen for unrecoverable errors.
+   */
+  addListener(eventName: 'inquiryError', listenerFunc: (info: InquiryErrorInfo) => void): Promise<PluginListenerHandle>;
+
+  /**
+   * Remove all registered listeners for this plugin instance.
+   */
+  removeAllListeners(): Promise<void>;
 }

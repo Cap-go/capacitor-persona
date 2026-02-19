@@ -95,51 +95,51 @@ replace_all() {
   done < "$file_list"
 }
 
-replace_all '@capgo/capacitor-plugin-template' "$package_name"
-replace_all 'https://github.com/Cap-go/capacitor-plugin-template' "$repo_url"
-replace_all 'capacitor-plugin-template' "$repo_name"
-replace_all 'CapgoCapacitorPluginTemplate' "$native_name"
-replace_all 'PluginTemplatePlugin' "$plugin_class_name"
-replace_all 'PluginTemplate' "$class_name"
-replace_all 'app.capgo.plugintemplate' "$package_id"
-replace_all 'app/capgo/plugintemplate' "$package_path"
-replace_all 'capacitorPluginTemplate' "$rollup_name"
+replace_all '@capgo/capacitor-persona' "$package_name"
+replace_all 'https://github.com/Cap-go/capacitor-persona' "$repo_url"
+replace_all 'capacitor-persona' "$repo_name"
+replace_all 'CapgoCapacitorPersona' "$native_name"
+replace_all 'PersonaPlugin' "$plugin_class_name"
+replace_all 'Persona' "$class_name"
+replace_all 'app.capgo.persona' "$package_id"
+replace_all 'app/capgo/persona' "$package_path"
+replace_all 'capacitorPersona' "$rollup_name"
 
-if [[ -f "CapgoCapacitorPluginTemplate.podspec" ]]; then
-  mv "CapgoCapacitorPluginTemplate.podspec" "${native_name}.podspec"
+if [[ -f "CapgoCapacitorPersona.podspec" ]]; then
+  mv "CapgoCapacitorPersona.podspec" "${native_name}.podspec"
 fi
 
-if [[ -d "ios/Sources/PluginTemplatePlugin" ]]; then
-  mv "ios/Sources/PluginTemplatePlugin" "ios/Sources/${plugin_class_name}"
+if [[ -d "ios/Sources/PersonaPlugin" ]]; then
+  mv "ios/Sources/PersonaPlugin" "ios/Sources/${plugin_class_name}"
 fi
 
-if [[ -d "ios/Tests/PluginTemplatePluginTests" ]]; then
-  mv "ios/Tests/PluginTemplatePluginTests" "ios/Tests/${plugin_class_name}Tests"
+if [[ -d "ios/Tests/PersonaPluginTests" ]]; then
+  mv "ios/Tests/PersonaPluginTests" "ios/Tests/${plugin_class_name}Tests"
 fi
 
-if [[ -f "ios/Sources/${plugin_class_name}/PluginTemplate.swift" ]]; then
-  mv "ios/Sources/${plugin_class_name}/PluginTemplate.swift" "ios/Sources/${plugin_class_name}/${class_name}.swift"
+if [[ -f "ios/Sources/${plugin_class_name}/Persona.swift" ]]; then
+  mv "ios/Sources/${plugin_class_name}/Persona.swift" "ios/Sources/${plugin_class_name}/${class_name}.swift"
 fi
 
-if [[ -f "ios/Sources/${plugin_class_name}/PluginTemplatePlugin.swift" ]]; then
-  mv "ios/Sources/${plugin_class_name}/PluginTemplatePlugin.swift" "ios/Sources/${plugin_class_name}/${plugin_class_name}.swift"
+if [[ -f "ios/Sources/${plugin_class_name}/PersonaPlugin.swift" ]]; then
+  mv "ios/Sources/${plugin_class_name}/PersonaPlugin.swift" "ios/Sources/${plugin_class_name}/${plugin_class_name}.swift"
 fi
 
-if [[ -f "ios/Tests/${plugin_class_name}Tests/PluginTemplatePluginTests.swift" ]]; then
-  mv "ios/Tests/${plugin_class_name}Tests/PluginTemplatePluginTests.swift" "ios/Tests/${plugin_class_name}Tests/${plugin_class_name}Tests.swift"
+if [[ -f "ios/Tests/${plugin_class_name}Tests/PersonaPluginTests.swift" ]]; then
+  mv "ios/Tests/${plugin_class_name}Tests/PersonaPluginTests.swift" "ios/Tests/${plugin_class_name}Tests/${plugin_class_name}Tests.swift"
 fi
 
-if [[ -d "android/src/main/java/app/capgo/plugintemplate" ]]; then
+if [[ -d "android/src/main/java/app/capgo/persona" ]]; then
   mkdir -p "android/src/main/java/$(dirname "$package_path")"
-  mv "android/src/main/java/app/capgo/plugintemplate" "android/src/main/java/$package_path"
+  mv "android/src/main/java/app/capgo/persona" "android/src/main/java/$package_path"
 fi
 
-if [[ -f "android/src/main/java/$package_path/PluginTemplate.java" ]]; then
-  mv "android/src/main/java/$package_path/PluginTemplate.java" "android/src/main/java/$package_path/${class_name}.java"
+if [[ -f "android/src/main/java/$package_path/Persona.java" ]]; then
+  mv "android/src/main/java/$package_path/Persona.java" "android/src/main/java/$package_path/${class_name}.java"
 fi
 
-if [[ -f "android/src/main/java/$package_path/PluginTemplatePlugin.java" ]]; then
-  mv "android/src/main/java/$package_path/PluginTemplatePlugin.java" "android/src/main/java/$package_path/${plugin_class_name}.java"
+if [[ -f "android/src/main/java/$package_path/PersonaPlugin.java" ]]; then
+  mv "android/src/main/java/$package_path/PersonaPlugin.java" "android/src/main/java/$package_path/${plugin_class_name}.java"
 fi
 
 echo "Template initialized."

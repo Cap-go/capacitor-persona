@@ -1,28 +1,79 @@
 import './style.css';
-import { PluginTemplate } from '@capgo/capacitor-plugin-template';
+import { Persona } from '@capgo/capacitor-persona';
 
 const output = document.getElementById('plugin-output');
-const echoInput = document.getElementById('echo-value');
-const echoButton = document.getElementById('run-echo');
-const versionButton = document.getElementById('get-version');
+const templateIdInput = document.getElementById('template-id');
+const inquiryIdInput = document.getElementById('inquiry-id');
+const sessionTokenInput = document.getElementById('session-token');
+const referenceIdInput = document.getElementById('reference-id');
+const environmentSelect = document.getElementById('environment');
+const fieldsInput = document.getElementById('fields-json');
+const startButton = document.getElementById('start-inquiry');
+
+let listenersAttached = false;
 
 const setOutput = (value) => {
   output.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
 };
 
-echoButton.addEventListener('click', async () => {
-  try {
-    const result = await PluginTemplate.echo({ value: echoInput.value });
-    setOutput(result);
-  } catch (error) {
-    setOutput(`Error: ${error?.message ?? error}`);
+const ensureListeners = async () => {
+  if (listenersAttached) {
+    return;
   }
-});
 
-versionButton.addEventListener('click', async () => {
+  await Persona.addListener('inquiryComplete', (result) => {
+    setOutput({ event: 'inquiryComplete', ...result });
+  });
+
+  await Persona.addListener('inquiryCanceled', (result) => {
+    setOutput({ event: 'inquiryCanceled', ...result });
+  });
+
+  await Persona.addListener('inquiryError', (result) => {
+    setOutput({ event: 'inquiryError', ...result });
+  });
+
+  listenersAttached = true;
+};
+
+startButton.addEventListener('click', async () => {
   try {
-    const result = await PluginTemplate.getPluginVersion();
-    setOutput(result);
+    await ensureListeners();
+
+    const templateId = templateIdInput.value.trim();
+    const inquiryId = inquiryIdInput.value.trim();
+    const sessionToken = sessionTokenInput.value.trim();
+    const referenceId = referenceIdInput.value.trim();
+    const environment = environmentSelect.value;
+
+    if (!templateId && !inquiryId) {
+      throw new Error('Provide either templateId or inquiryId.');
+    }
+
+    const options = {
+      environment,
+    };
+
+    if (templateId) {
+      options.templateId = templateId;
+    }
+    if (inquiryId) {
+      options.inquiryId = inquiryId;
+    }
+    if (sessionToken) {
+      options.sessionToken = sessionToken;
+    }
+    if (referenceId) {
+      options.referenceId = referenceId;
+    }
+
+    const fieldsText = fieldsInput.value.trim();
+    if (fieldsText) {
+      options.fields = JSON.parse(fieldsText);
+    }
+
+    await Persona.startInquiry(options);
+    setOutput({ event: 'startInquiry', status: 'launched', options });
   } catch (error) {
     setOutput(`Error: ${error?.message ?? error}`);
   }

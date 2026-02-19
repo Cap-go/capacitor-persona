@@ -1,256 +1,244 @@
-# @capgo/capacitor-plugin-template
+# @capgo/capacitor-persona
  <a href="https://capgo.app/"><img src='https://raw.githubusercontent.com/Cap-go/capgo/main/assets/capgo_banner.png' alt='Capgo - Instant updates for capacitor'/></a>
 
 <div align="center">
-  <h2><a href="https://capgo.app/?ref=plugin_{{PLUGIN_REF_SLUG}}"> ➡️ Get Instant updates for your App with Capgo</a></h2>
-  <h2><a href="https://capgo.app/consulting/?ref=plugin_{{PLUGIN_REF_SLUG}}"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
+  <h2><a href="https://capgo.app/?ref=plugin_persona"> ➡️ Get Instant updates for your App with Capgo</a></h2>
+  <h2><a href="https://capgo.app/consulting/?ref=plugin_persona"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
 </div>
 
-> Template README. Replace every `{{PLACEHOLDER}}` value before releasing.
-
-## Snapshot
-
-- **Plugin name:** `{{PLUGIN_DISPLAY_NAME}}`
-- **One-line value:** `{{PLUGIN_TAGLINE}}`
-- **Maintainer:** `{{MAINTAINER_OR_TEAM}}`
-- **Status:** `{{alpha|beta|stable}}`
-
-## Pre-Release Checklist
-
-- [ ] Replace all `{{PLACEHOLDER}}` values in this README.
-- [ ] Replace `{{PLUGIN_REF_SLUG}}` in Capgo CTA links (example: `native_audio`).
-- [ ] Replace all `__AI_KEYWORD_*__` entries in `package.json`.
-- [ ] Update the compatibility table for this plugin.
-- [ ] Update `src/definitions.ts` with the real public API and JSDoc.
-- [ ] Run `bun run docgen` and review generated API docs below.
-- [ ] Confirm examples in this file run against the real implementation.
-- [ ] Set GitHub repo description to start with `Capacitor plugin for ...`.
-- [ ] Set GitHub repo homepage to `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`.
-- [ ] Open docs/website PR and follow the complete website integration checklist in section **3) Open docs/website pull request**.
-- [ ] Run `bun run verify` before publishing.
-
-## Problem & Scope
-
-### Why this plugin exists
-
-`{{WHAT_PAIN_POINT_IT_SOLVES}}`
-
-## Capgo Links
-
-- **Plugin docs URL:** `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`
-- **Plugin tutorial URL:** `{{PLUGIN_TUTORIAL_URL}}`
-- **Website/docs repo:** `https://github.com/Cap-go/website`
-
-### What it does
-
-- `{{CAPABILITY_1}}`
-- `{{CAPABILITY_2}}`
-- `{{CAPABILITY_3}}`
-
-### What it does not do
-
-- `{{OUT_OF_SCOPE_1}}`
-- `{{OUT_OF_SCOPE_2}}`
-
-## Compatibility
-
-| Plugin version | Capacitor compatibility | Maintained |
-| -------------- | ----------------------- | ---------- |
-| v8.\*.\*       | v8.\*.\*                | ✅          |
-| v7.\*.\*       | v7.\*.\*                | On demand   |
-| v6.\*.\*       | v6.\*.\*                | On demand   |
-
-Policy:
-
-- New plugins start at version `8.0.0` (Capacitor 8 baseline).
-- Backward compatibility for older Capacitor majors is supported on demand.
-
-## Quick Start (Template Authors)
-
-```bash
-bun install
-bun run init-plugin your-plugin YourPlugin app.capgo.yourplugin
-bun run verify
-```
-
-The `init-plugin` command updates package names, native class names, iOS/Android identifiers, and the local example app wiring.
-
-## Public Launch (Required)
-
-### 1) Publish in Capgo GitHub org as public
-
-```bash
-gh repo create Cap-go/capacitor-{{PLUGIN_SLUG}} --public --source=. --remote=origin --push
-```
-
-If the repo already exists and is private:
-
-```bash
-gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} --visibility public --accept-visibility-change-consequences
-```
-
-### 2) Set GitHub description and homepage
-
-Description must always start with: `Capacitor plugin for ...`
-
-```bash
-gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} \
-  --description "Capacitor plugin for {{SHORT_USE_CASE}}." \
-  --homepage "https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/"
-```
-
-### 3) Open docs/website pull request
-
-Create a PR on `https://github.com/Cap-go/website` (or the local `landing/` folder in the monorepo) with all of the following:
-
-1. Add the plugin entry in `src/config/plugins.ts`.
-2. Add a plugin `LinkCard` in `src/content/docs/docs/plugins/index.mdx`.
-3. Create docs pages in `src/content/docs/docs/plugins/<plugin-doc-slug>/`:
-   `index.mdx`, `getting-started.mdx`, and optionally `ios.mdx` + `android.mdx` when platform setup differs.
-4. Update `astro.config.mjs`:
-   add `docs/plugins/<plugin-doc-slug>/**` in pagefind path buckets and add a sidebar section for the plugin pages.
-5. Add the SEO tutorial page in `src/content/plugins-tutorials/en/<plugin-repo-slug>.md`.
-6. Add icon asset `public/icons/plugins/<plugin-doc-slug>.svg` if the docs hero uses a plugin icon.
-7. Cross-link docs and tutorial pages.
-
-Slug mapping rules:
-
-- `<plugin-doc-slug>` is the docs route slug used under `/docs/plugins/<plugin-doc-slug>/`.
-- `<plugin-repo-slug>` is extracted from the GitHub repo URL in `src/config/plugins.ts` and is used by `/plugins/<slug>/`.
-- Example: repo `https://github.com/Cap-go/capacitor-app-attest/` requires tutorial file
-  `src/content/plugins-tutorials/en/capacitor-app-attest.md`.
-
-Starter snippets:
-
-`src/config/plugins.ts`
-
-```ts
-{
-  name: '@capgo/capacitor-{{PLUGIN_SLUG}}',
-  author: 'github.com/Cap-go',
-  description: 'Capacitor plugin for {{SHORT_USE_CASE}}',
-  href: 'https://github.com/Cap-go/capacitor-{{PLUGIN_SLUG}}/',
-  title: '{{PLUGIN_DISPLAY_NAME}}',
-  icon: ShieldCheckIcon,
-},
-```
-
-`astro.config.mjs` sidebar entry
-
-```ts
-{
-  label: '{{PLUGIN_DISPLAY_NAME}}',
-  items: [
-    { label: 'Overview', link: '/docs/plugins/<plugin-doc-slug>/' },
-    { label: 'Getting started', link: '/docs/plugins/<plugin-doc-slug>/getting-started' },
-    { label: 'iOS setup', link: '/docs/plugins/<plugin-doc-slug>/ios' },
-    { label: 'Android setup', link: '/docs/plugins/<plugin-doc-slug>/android' },
-  ],
-  collapsed: true,
-},
-```
-
-Required docs files:
-
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/index.mdx`
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/getting-started.mdx`
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/ios.mdx` (if iOS-specific setup exists)
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/android.mdx` (if Android-specific setup exists)
-- `src/content/plugins-tutorials/en/<plugin-repo-slug>.md`
+Capacitor plugin for launching Persona Inquiry flows in iOS and Android apps.
 
 ## Install
 
 ```bash
-bun add @capgo/capacitor-plugin-template
+bun add @capgo/capacitor-persona
 bunx cap sync
 ```
 
-## Minimal Usage
+## Usage
 
-```typescript
-import { PluginTemplate } from '@capgo/capacitor-plugin-template';
+```ts
+import { Persona } from '@capgo/capacitor-persona';
 
-const result = await PluginTemplate.echo({ value: 'Hello from Capgo' });
-console.log(result.value);
+await Persona.addListener('inquiryComplete', (result) => {
+  console.log('Persona complete', result.inquiryId, result.status, result.fields);
+});
+
+await Persona.addListener('inquiryCanceled', (result) => {
+  console.log('Persona canceled', result.inquiryId, result.sessionToken);
+});
+
+await Persona.addListener('inquiryError', (result) => {
+  console.error('Persona error', result.error, result.errorCode);
+});
+
+await Persona.startInquiry({
+  templateId: 'itmpl_EXAMPLE',
+  environment: 'sandbox',
+  referenceId: 'user_123',
+  fields: {
+    name_first: 'Alex',
+    age: 29,
+    is_verified_user: true,
+  },
+});
 ```
 
 ## Integration Notes
 
-- **iOS:** `{{IOS_NOTES_OR_PERMISSIONS}}`
-- **Android:** `{{ANDROID_NOTES_OR_PERMISSIONS}}`
-- **Web:** `{{WEB_LIMITATIONS_OR_BEHAVIOR}}`
-
-## Example App
-
-The `example-app/` folder is linked via `file:..` and is intended for validating native wiring during development.
+- iOS requires Persona usage descriptions in `Info.plist`, including `NSCameraUsageDescription`, `NSLocationWhenInUseUsageDescription`, and `NSBluetoothAlwaysUsageDescription`.
+- Android uses Persona's Maven repository (`https://sdk.withpersona.com/android/releases`) and bundles `com.withpersona.sdk2:inquiry`.
+- For critical business logic, rely on Persona webhooks instead of SDK callbacks.
 
 ## API
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
-* [`getPluginVersion()`](#getpluginversion)
+* [`startInquiry(...)`](#startinquiry)
+* [`addListener('inquiryComplete', ...)`](#addlistenerinquirycomplete-)
+* [`addListener('inquiryCanceled', ...)`](#addlistenerinquirycanceled-)
+* [`addListener('inquiryError', ...)`](#addlistenerinquiryerror-)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-Base API used by the template plugin.
-
-### echo(...)
+### startInquiry(...)
 
 ```typescript
-echo(options: EchoOptions) => Promise<EchoResult>
+startInquiry(options: StartInquiryOptions) => Promise<void>
 ```
 
-Echo a string to validate JS &lt;-&gt; native wiring.
+Launch a Persona Inquiry flow.
 
-| Param         | Type                                                |
-| ------------- | --------------------------------------------------- |
-| **`options`** | <code><a href="#echooptions">EchoOptions</a></code> |
-
-**Returns:** <code>Promise&lt;<a href="#echoresult">EchoResult</a>&gt;</code>
+| Param         | Type                                                                |
+| ------------- | ------------------------------------------------------------------- |
+| **`options`** | <code><a href="#startinquiryoptions">StartInquiryOptions</a></code> |
 
 --------------------
 
-### getPluginVersion()
+
+### addListener('inquiryComplete', ...)
 
 ```typescript
-getPluginVersion() => Promise<PluginVersionResult>
+addListener(eventName: 'inquiryComplete', listenerFunc: (info: InquiryCompleteInfo) => void) => Promise<PluginListenerHandle>
 ```
 
-Returns the platform implementation version marker.
+Listen for successful completion.
 
-**Returns:** <code>Promise&lt;<a href="#pluginversionresult">PluginVersionResult</a>&gt;</code>
+| Param              | Type                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'inquiryComplete'</code>                                                         |
+| **`listenerFunc`** | <code>(info: <a href="#inquirycompleteinfo">InquiryCompleteInfo</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
+
+
+### addListener('inquiryCanceled', ...)
+
+```typescript
+addListener(eventName: 'inquiryCanceled', listenerFunc: (info: InquiryCanceledInfo) => void) => Promise<PluginListenerHandle>
+```
+
+Listen for cancellation.
+
+| Param              | Type                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'inquiryCanceled'</code>                                                         |
+| **`listenerFunc`** | <code>(info: <a href="#inquirycanceledinfo">InquiryCanceledInfo</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('inquiryError', ...)
+
+```typescript
+addListener(eventName: 'inquiryError', listenerFunc: (info: InquiryErrorInfo) => void) => Promise<PluginListenerHandle>
+```
+
+Listen for unrecoverable errors.
+
+| Param              | Type                                                                             |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'inquiryError'</code>                                                      |
+| **`listenerFunc`** | <code>(info: <a href="#inquiryerrorinfo">InquiryErrorInfo</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
+
+Remove all registered listeners for this plugin instance.
+
+--------------------
+
 
 ### Interfaces
 
-#### EchoResult
 
-Echo response payload.
+#### StartInquiryOptions
 
-| Prop        | Type                | Description                      |
-| ----------- | ------------------- | -------------------------------- |
-| **`value`** | <code>string</code> | The same value passed to `echo`. |
+Input payload used to launch an Inquiry.
 
-#### EchoOptions
+Provide at least one of:
+- `templateId`
+- `templateVersion`
+- `inquiryId`
 
-Input payload for the echo call.
+| Prop                  | Type                                                                                                        | Description                                               | Default                   |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------- |
+| **`inquiryId`**       | <code>string</code>                                                                                         | Existing Inquiry ID created on your backend.              |                           |
+| **`sessionToken`**    | <code>string</code>                                                                                         | Session token required when resuming an existing Inquiry. |                           |
+| **`templateId`**      | <code>string</code>                                                                                         | Inquiry template ID from Persona Dashboard (recommended). |                           |
+| **`templateVersion`** | <code>string</code>                                                                                         | Inquiry template version ID from Persona Dashboard.       |                           |
+| **`referenceId`**     | <code>string</code>                                                                                         | Your internal user reference.                             |                           |
+| **`accountId`**       | <code>string</code>                                                                                         | Persona account ID.                                       |                           |
+| **`environment`**     | <code><a href="#personaenvironment">PersonaEnvironment</a></code>                                           | Persona environment.                                      | <code>'production'</code> |
+| **`locale`**          | <code>string</code>                                                                                         | Locale override, for example `en`, `fr`, `es`.            |                           |
+| **`fields`**          | <code><a href="#record">Record</a>&lt;string, <a href="#personafieldvalue">PersonaFieldValue</a>&gt;</code> | Optional fields pre-written into the Inquiry.             |                           |
 
-| Prop        | Type                | Description                                                           |
-| ----------- | ------------------- | --------------------------------------------------------------------- |
-| **`value`** | <code>string</code> | Arbitrary text that should be returned by native/web implementations. |
 
-#### PluginVersionResult
+#### PluginListenerHandle
 
-Plugin version payload.
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
-| Prop          | Type                | Description                                                 |
-| ------------- | ------------------- | ----------------------------------------------------------- |
-| **`version`** | <code>string</code> | Version identifier returned by the platform implementation. |
+
+#### InquiryCompleteInfo
+
+Payload emitted when an Inquiry is completed.
+
+| Prop            | Type                                                                                                                    |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **`inquiryId`** | <code>string</code>                                                                                                     |
+| **`status`**    | <code>string</code>                                                                                                     |
+| **`fields`**    | <code><a href="#record">Record</a>&lt;string, <a href="#personaresultfieldvalue">PersonaResultFieldValue</a>&gt;</code> |
+
+
+#### InquiryCanceledInfo
+
+Payload emitted when an Inquiry is canceled.
+
+| Prop               | Type                |
+| ------------------ | ------------------- |
+| **`inquiryId`**    | <code>string</code> |
+| **`sessionToken`** | <code>string</code> |
+
+
+#### InquiryErrorInfo
+
+Payload emitted when an Inquiry errors.
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`error`**     | <code>string</code> |
+| **`errorCode`** | <code>string</code> |
+| **`cause`**     | <code>string</code> |
+
+
+### Type Aliases
+
+
+#### PersonaEnvironment
+
+Environment where Persona should run.
+
+<code>'production' | 'sandbox'</code>
+
+
+#### Record
+
+Construct a type with a set of properties K of type T
+
+<code>{ [P in K]: T; }</code>
+
+
+#### PersonaFieldValue
+
+Supported field value types for pre-writing Inquiry fields.
+
+<code>string | number | boolean | string[]</code>
+
+
+#### PersonaResultFieldValue
+
+Serialized field value returned in Inquiry result callbacks.
+
+<code>string | number | boolean | string[] | null</code>
 
 </docgen-api>

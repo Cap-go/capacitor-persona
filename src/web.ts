@@ -1,15 +1,9 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { EchoOptions, EchoResult, PluginTemplatePlugin, PluginVersionResult } from './definitions';
+import type { PersonaPlugin, StartInquiryOptions } from './definitions';
 
-export class PluginTemplateWeb extends WebPlugin implements PluginTemplatePlugin {
-  async echo(options: EchoOptions): Promise<EchoResult> {
-    return options;
-  }
-
-  async getPluginVersion(): Promise<PluginVersionResult> {
-    return {
-      version: 'web',
-    };
+export class PersonaWeb extends WebPlugin implements PersonaPlugin {
+  async startInquiry(_options: StartInquiryOptions): Promise<void> {
+    throw this.unavailable('Persona Inquiry is only available on iOS and Android.');
   }
 }

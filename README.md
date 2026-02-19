@@ -26,7 +26,7 @@
 - [ ] Confirm examples in this file run against the real implementation.
 - [ ] Set GitHub repo description to start with `Capacitor plugin for ...`.
 - [ ] Set GitHub repo homepage to `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`.
-- [ ] Open docs/website PR to add this plugin to plugin list + plugin tutorial.
+- [ ] Open docs/website PR and follow the complete website integration checklist in section **3) Open docs/website pull request**.
 - [ ] Run `bun run verify` before publishing.
 
 ## Problem & Scope
@@ -101,12 +101,24 @@ gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} \
 
 ### 3) Open docs/website pull request
 
-Create a PR on `https://github.com/Cap-go/website` that includes:
+Create a PR on `https://github.com/Cap-go/website` (or the local `landing/` folder in the monorepo) with all of the following:
 
-- Add plugin card/entry in website plugin list file: `{{WEBSITE_PLUGIN_LIST_FILE}}`
-- Add plugin documentation page: `{{WEBSITE_PLUGIN_DOC_FILE}}`
-- Add plugin tutorial page: `{{WEBSITE_PLUGIN_TUTORIAL_FILE}}`
-- Cross-link docs page and tutorial page
+1. Add the plugin entry in `src/config/plugins.ts`.
+2. Add a plugin `LinkCard` in `src/content/docs/docs/plugins/index.mdx`.
+3. Create docs pages in `src/content/docs/docs/plugins/<plugin-doc-slug>/`:
+   `index.mdx`, `getting-started.mdx`, and optionally `ios.mdx` + `android.mdx` when platform setup differs.
+4. Update `astro.config.mjs`:
+   add `docs/plugins/<plugin-doc-slug>/**` in pagefind path buckets and add a sidebar section for the plugin pages.
+5. Add the SEO tutorial page in `src/content/plugins-tutorials/en/<plugin-repo-slug>.md`.
+6. Add icon asset `public/icons/plugins/<plugin-doc-slug>.svg` if the docs hero uses a plugin icon.
+7. Cross-link docs and tutorial pages.
+
+Slug mapping rules:
+
+- `<plugin-doc-slug>` is the docs route slug used under `/docs/plugins/<plugin-doc-slug>/`.
+- `<plugin-repo-slug>` is extracted from the GitHub repo URL in `src/config/plugins.ts` and is used by `/plugins/<slug>/`.
+- Example: repo `https://github.com/Cap-go/capacitor-app-attest/` requires tutorial file
+  `src/content/plugins-tutorials/en/capacitor-app-attest.md`.
 
 ## Install
 
@@ -165,7 +177,6 @@ Echo a string to validate JS &lt;-&gt; native wiring.
 
 --------------------
 
-
 ### getPluginVersion()
 
 ```typescript
@@ -178,9 +189,7 @@ Returns the platform implementation version marker.
 
 --------------------
 
-
 ### Interfaces
-
 
 #### EchoResult
 
@@ -190,7 +199,6 @@ Echo response payload.
 | ----------- | ------------------- | -------------------------------- |
 | **`value`** | <code>string</code> | The same value passed to `echo`. |
 
-
 #### EchoOptions
 
 Input payload for the echo call.
@@ -198,7 +206,6 @@ Input payload for the echo call.
 | Prop        | Type                | Description                                                           |
 | ----------- | ------------------- | --------------------------------------------------------------------- |
 | **`value`** | <code>string</code> | Arbitrary text that should be returned by native/web implementations. |
-
 
 #### PluginVersionResult
 

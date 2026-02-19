@@ -27,12 +27,24 @@ When shipping a new plugin from this template, the agent must perform all of the
    - `Capacitor plugin for ...`
 3. Set the GitHub repository homepage to:
    - `https://capgo.app/docs/plugins/<plugin-slug>/`
-4. Open a pull request on `https://github.com/Cap-go/website` to:
-   - Add the plugin to the website plugins list
-   - Add/update the plugin documentation page
-   - Add/update the plugin tutorial page
+4. Open a pull request on `https://github.com/Cap-go/website` (or monorepo folder `landing/`) and update:
+   - `src/config/plugins.ts` (plugin registry entry)
+   - `src/content/docs/docs/plugins/index.mdx` (plugin card in docs index)
+   - `src/content/docs/docs/plugins/<plugin-doc-slug>/index.mdx`
+   - `src/content/docs/docs/plugins/<plugin-doc-slug>/getting-started.mdx`
+   - `src/content/docs/docs/plugins/<plugin-doc-slug>/ios.mdx` and `android.mdx` when platform setup differs
+   - `astro.config.mjs` (pagefind bucket + docs sidebar entry)
+   - `src/content/plugins-tutorials/en/<plugin-repo-slug>.md` (SEO tutorial page)
+   - `public/icons/plugins/<plugin-doc-slug>.svg` when the docs hero references a plugin icon
 5. Keep the README Capgo CTA header block and replace:
    - `{{PLUGIN_REF_SLUG}}` with the tracking slug (example: `native_audio`)
+
+Website slug rule:
+
+- Docs routes use `<plugin-doc-slug>` under `/docs/plugins/<plugin-doc-slug>/`.
+- Tutorial routing uses `<plugin-repo-slug>` extracted from the plugin GitHub URL in `src/config/plugins.ts`.
+- Example: repo URL `https://github.com/Cap-go/capacitor-app-attest/` maps to tutorial file
+  `src/content/plugins-tutorials/en/capacitor-app-attest.md`.
 
 Reference commands:
 

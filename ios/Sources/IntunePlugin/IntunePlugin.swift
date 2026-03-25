@@ -98,7 +98,7 @@ public class IntunePlugin: CAPPlugin, CAPBridgedPlugin {
 
     override public func load() {
         appConfigObserver = NotificationCenter.default.addObserver(
-            forName: NSNotification.Name(rawValue: IntuneMAMAppConfigDidChangeNotification as String),
+            forName: .IntuneMAMAppConfigDidChange,
             object: nil,
             queue: .main
         ) { [weak self] notification in
@@ -111,7 +111,7 @@ public class IntunePlugin: CAPPlugin, CAPBridgedPlugin {
         }
 
         policyObserver = NotificationCenter.default.addObserver(
-            forName: NSNotification.Name(rawValue: IntuneMAMPolicyDidChangeNotification as String),
+            forName: .IntuneMAMPolicyDidChange,
             object: nil,
             queue: .main
         ) { [weak self] notification in
@@ -320,7 +320,7 @@ public class IntunePlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func displayDiagnosticConsole(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
-            IntuneMAMDiagnosticConsole.displayDiagnosticConsole()
+            IntuneMAMDiagnosticConsole.display()
             call.resolve()
         }
     }
@@ -470,12 +470,13 @@ public class IntunePlugin: CAPPlugin, CAPBridgedPlugin {
     private func serializeAppConfig(accountId: String, config: IntuneMAMAppConfig) -> [String: Any] {
         let fullData = (config.fullData ?? []).map { dictionary in
             dictionary.reduce(into: [String: String]()) { result, entry in
+                let key = String(describing: entry.key)
                 if let value = entry.value as? String {
-                    result[entry.key] = value
+                    result[key] = value
                 } else if let value = entry.value as? NSNumber {
-                    result[entry.key] = value.stringValue
+                    result[key] = value.stringValue
                 } else {
-                    result[entry.key] = "\(entry.value)"
+                    result[key] = "\(entry.value)"
                 }
             }
         }

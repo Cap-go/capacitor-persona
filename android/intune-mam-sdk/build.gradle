@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file("../ms-intune-app-sdk-android/Microsoft.Intune.MAM.SDK.aar"))

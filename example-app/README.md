@@ -1,6 +1,6 @@
-# Example App for `@capgo/capacitor-persona`
+# Example App for `@capgo/capacitor-intune`
 
-This Vite project links directly to the local plugin source so you can validate Persona Inquiry wiring on iOS and Android.
+This Vite project links directly to the local plugin source so you can validate Intune MAM and MSAL flows against the local package.
 
 ## Getting started
 
@@ -17,4 +17,17 @@ bunx cap add android
 bunx cap sync
 ```
 
-In the UI, provide a Persona template ID (or inquiry ID) and tap **Start inquiry**.
+Before testing on device or simulator, add your own:
+
+- Android `android/app/src/main/res/raw/auth_config.json`
+- Android manifest redirect URI and broker queries
+- iOS `IntuneMAMSettings` values in `Info.plist`
+- iOS MSAL callback handling in `AppDelegate`
+
+The sample UI lets you:
+
+- acquire a token interactively
+- acquire a token silently for a cached account
+- register and enroll the account with Intune
+- inspect enrolled user, app config, policy, group name, and SDK versions
+- listen for policy and app config refresh events

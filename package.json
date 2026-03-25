@@ -1,41 +1,43 @@
 {
-  "name": "@capgo/capacitor-persona",
-  "version": "8.1.1",
-  "description": "Capacitor plugin for launching Persona Inquiry flows on iOS and Android.",
+  "name": "@capgo/capacitor-intune",
+  "version": "8.0.0",
+  "description": "Capacitor plugin for Microsoft Intune MAM enrollment, app protection policies, app config, and MSAL authentication.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
   "files": [
     "android/src/main/",
+    "android/ms-intune-app-sdk-android/",
     "android/build.gradle",
     "dist/",
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
-    "CapgoCapacitorPersona.podspec"
+    "CapgoCapacitorIntune.podspec"
   ],
   "author": "Martin Donadieu <martin@capgo.app>",
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cap-go/capacitor-persona.git"
+    "url": "git+https://github.com/Cap-go/capacitor-intune.git"
   },
   "bugs": {
-    "url": "https://github.com/Cap-go/capacitor-persona/issues"
+    "url": "https://github.com/Cap-go/capacitor-intune/issues"
   },
-  "homepage": "https://capgo.app/docs/plugins/persona/",
+  "homepage": "https://capgo.app/docs/plugins/intune/",
   "keywords": [
     "capacitor",
     "plugin",
-    "persona",
-    "inquiry",
-    "identity-verification"
+    "intune",
+    "mam",
+    "msal",
+    "enterprise",
+    "app-protection"
   ],
   "scripts": {
-    "init-plugin": "./scripts/init-plugin.sh",
     "verify": "bun run verify:ios && bun run verify:android && bun run verify:web",
-    "verify:ios": "xcodebuild -scheme CapgoCapacitorPersona -destination generic/platform=iOS",
+    "verify:ios": "xcodebuild -scheme CapgoCapacitorIntune -destination generic/platform=iOS",
     "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "verify:web": "bun run build",
     "lint": "bun run eslint && bun run prettier -- --check && bun run swiftlint -- lint",
@@ -43,12 +45,12 @@
     "eslint": "eslint . --ext .ts",
     "prettier": "prettier-pretty-check \"**/*.{css,html,ts,js,java}\" --plugin=prettier-plugin-java",
     "swiftlint": "node-swiftlint",
-    "docgen": "docgen --api PersonaPlugin --output-readme README.md --output-json dist/docs.json",
+    "docgen": "docgen --api IntuneMAMPlugin --output-readme README.md --output-json dist/docs.json",
     "build": "bun run clean && bun run docgen && tsc && rollup -c rollup.config.mjs",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "bun run build",
-    "check:wiring": "node scripts/check-capacitor-plugin-wiring.mjs"
+    "check:wiring": "bun scripts/check-capacitor-plugin-wiring.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.0.0",

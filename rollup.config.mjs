@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorPersona',
+      name: 'capacitorIntuneMAM',
       globals: {
         '@capacitor/core': 'capacitorExports',
       },

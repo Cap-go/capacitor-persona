@@ -1,2 +1,6 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+include ':intune-mam-sdk'
+project(':intune-mam-sdk').projectDir = new File('./intune-mam-sdk')
+include ':intune-downlevel-stubs'
+project(':intune-downlevel-stubs').projectDir = new File('./intune-downlevel-stubs')

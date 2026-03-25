@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file("../ms-intune-app-sdk-android/libs/Microsoft.Intune.MAM.SDK.DownlevelStubs.aar"))

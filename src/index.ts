@@ -1,10 +1,10 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { PersonaPlugin } from './definitions';
+import type { IntuneMAMPlugin } from './definitions';
 
-const Persona = registerPlugin<PersonaPlugin>('Persona', {
-  web: () => import('./web').then((m) => new m.PersonaWeb()),
+const IntuneMAM = registerPlugin<IntuneMAMPlugin>('IntuneMAM', {
+  web: () => import('./web').then((m) => new m.IntuneMAMWeb()),
 });
 
 export * from './definitions';
-export { Persona };
+export { IntuneMAM };

@@ -2,29 +2,31 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapgoCapacitorPersona",
-    platforms: [.iOS(.v15)],
+    name: "CapgoCapacitorIntune",
+    platforms: [.iOS(.v17)],
     products: [
         .library(
-            name: "CapgoCapacitorPersona",
-            targets: ["PersonaPlugin"])
+            name: "CapgoCapacitorIntune",
+            targets: ["IntunePlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0"),
-        .package(url: "https://github.com/persona-id/inquiry-ios-2.git", exact: "2.41.2")
+        .package(url: "https://github.com/microsoftconnect/ms-intune-app-sdk-ios.git", exact: "21.5.1"),
+        .package(url: "https://github.com/AzureAD/microsoft-authentication-library-for-objc.git", exact: "2.9.0")
     ],
     targets: [
         .target(
-            name: "PersonaPlugin",
+            name: "IntunePlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
-                .product(name: "PersonaInquirySDK2", package: "inquiry-ios-2")
+                .product(name: "IntuneMAMSwift", package: "ms-intune-app-sdk-ios"),
+                .product(name: "MSAL", package: "microsoft-authentication-library-for-objc")
             ],
-            path: "ios/Sources/PersonaPlugin"),
+            path: "ios/Sources/IntunePlugin"),
         .testTarget(
-            name: "PersonaPluginTests",
-            dependencies: ["PersonaPlugin"],
-            path: "ios/Tests/PersonaPluginTests")
+            name: "IntunePluginTests",
+            dependencies: ["IntunePlugin"],
+            path: "ios/Tests/IntunePluginTests")
     ]
 )

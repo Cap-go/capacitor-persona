@@ -1,7 +1,7 @@
 import XCTest
-@testable import PersonaPlugin
+@testable import IntunePlugin
 
-final class PersonaPluginTests: XCTestCase {
+final class IntunePluginTests: XCTestCase {
     func testPlaceholder() {
         XCTAssertTrue(true)
     }

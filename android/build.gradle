@@ -56,8 +56,8 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
-    implementation project(':intune-mam-sdk')
-    implementation project(':intune-downlevel-stubs')
+    implementation files('ms-intune-app-sdk-android/Microsoft.Intune.MAM.SDK.aar')
+    implementation files('ms-intune-app-sdk-android/libs/Microsoft.Intune.MAM.SDK.DownlevelStubs.aar')
     annotationProcessor project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.activity:activity:$androidxActivityVersion"

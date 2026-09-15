@@ -38,6 +38,25 @@ bun remove "$plugin_name"
 bun add "${packed_packages[0]}"
 bun run build
 
+patch_ios_deployment_target() {
+  local ios_min_version
+  ios_min_version="$(
+    node -e "
+      const fs = require('node:fs');
+      const path = require('node:path');
+      const podspec = fs.readFileSync(path.join('${repo_root}', 'CapgoCapacitorIntune.podspec'), 'utf8');
+      const match = podspec.match(/deployment_target = '([0-9.]+)'/);
+      process.stdout.write(match?.[1] ?? '15.0');
+    "
+  )"
+  local pbxproj="ios/App/App.xcodeproj/project.pbxproj"
+  if [ ! -f "$pbxproj" ]; then
+    return 0
+  fi
+  sed -i.bak "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = ${ios_min_version};/g" "$pbxproj"
+  rm -f "${pbxproj}.bak"
+}
+
 case "$platform" in
   android)
     if [ ! -d android ]; then
@@ -51,6 +70,7 @@ case "$platform" in
     if [ ! -d ios ]; then
       bunx cap add ios
     fi
+    patch_ios_deployment_target
     bunx cap sync ios
     rm -rf "$HOME/Library/Caches/org.swift.swiftpm/artifacts"/https___github_com_ionic_team_capacitor_swift_pm_releases_download_*
     xcodebuild \

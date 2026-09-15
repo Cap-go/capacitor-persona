@@ -38,6 +38,33 @@ bun remove "$plugin_name"
 bun add "${packed_packages[0]}"
 bun run build
 
+patch_android_intune_gradle_includes() {
+  local cap_settings="android/capacitor.settings.gradle"
+  if [ ! -f "$cap_settings" ]; then
+    return 0
+  fi
+  if grep -q "intune-mam-sdk" "$cap_settings"; then
+    return 0
+  fi
+  local plugin_android_dir
+  plugin_android_dir="$(
+    node -e "
+      const fs = require('node:fs');
+      const text = fs.readFileSync('${cap_settings}', 'utf8');
+      const match = text.match(/project\\(':capgo-capacitor-intune'\\)\\.projectDir = new File\\('([^']+)'\\)/);
+      if (!match) process.exit(1);
+      process.stdout.write(match[1]);
+    "
+  )"
+  cat >>"$cap_settings" <<EOF
+
+include ':intune-mam-sdk'
+project(':intune-mam-sdk').projectDir = new File('${plugin_android_dir}/intune-mam-sdk')
+include ':intune-downlevel-stubs'
+project(':intune-downlevel-stubs').projectDir = new File('${plugin_android_dir}/intune-downlevel-stubs')
+EOF
+}
+
 patch_ios_deployment_target() {
   local ios_min_version
   ios_min_version="$(
@@ -63,6 +90,7 @@ case "$platform" in
       bunx cap add android
     fi
     bunx cap sync android
+    patch_android_intune_gradle_includes
     cd android
     ./gradlew build test
     ;;

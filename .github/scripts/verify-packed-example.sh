@@ -38,59 +38,13 @@ bun remove "$plugin_name"
 bun add "${packed_packages[0]}"
 bun run build
 
-patch_android_intune_gradle_includes() {
-  local cap_settings="android/capacitor.settings.gradle"
-  if [ ! -f "$cap_settings" ]; then
-    return 0
-  fi
-  if grep -q "intune-mam-sdk" "$cap_settings"; then
-    return 0
-  fi
-  local plugin_android_dir
-  plugin_android_dir="$(
-    node -e "
-      const fs = require('node:fs');
-      const text = fs.readFileSync('${cap_settings}', 'utf8');
-      const match = text.match(/project\\(':capgo-capacitor-intune'\\)\\.projectDir = new File\\('([^']+)'\\)/);
-      if (!match) process.exit(1);
-      process.stdout.write(match[1]);
-    "
-  )"
-  cat >>"$cap_settings" <<EOF
-
-include ':intune-mam-sdk'
-project(':intune-mam-sdk').projectDir = new File('${plugin_android_dir}/intune-mam-sdk')
-include ':intune-downlevel-stubs'
-project(':intune-downlevel-stubs').projectDir = new File('${plugin_android_dir}/intune-downlevel-stubs')
-EOF
-}
-
-patch_ios_deployment_target() {
-  local ios_min_version
-  ios_min_version="$(
-    node -e "
-      const fs = require('node:fs');
-      const path = require('node:path');
-      const podspec = fs.readFileSync(path.join('${repo_root}', 'CapgoCapacitorIntune.podspec'), 'utf8');
-      const match = podspec.match(/deployment_target = '([0-9.]+)'/);
-      process.stdout.write(match?.[1] ?? '15.0');
-    "
-  )"
-  local pbxproj="ios/App/App.xcodeproj/project.pbxproj"
-  if [ ! -f "$pbxproj" ]; then
-    return 0
-  fi
-  sed -i.bak "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = ${ios_min_version};/g" "$pbxproj"
-  rm -f "${pbxproj}.bak"
-}
-
 case "$platform" in
   android)
     if [ ! -d android ]; then
       bunx cap add android
     fi
     bunx cap sync android
-    patch_android_intune_gradle_includes
+    python3 "$repo_root/.github/scripts/patch-intune-example-android.py"
     cd android
     ./gradlew build test
     ;;
@@ -98,7 +52,11 @@ case "$platform" in
     if [ ! -d ios ]; then
       bunx cap add ios
     fi
-    patch_ios_deployment_target
+    ios_pbxproj="ios/App/App.xcodeproj/project.pbxproj"
+    if [ -f "$ios_pbxproj" ]; then
+      sed -i.bak 's/IPHONEOS_DEPLOYMENT_TARGET = 15.0/IPHONEOS_DEPLOYMENT_TARGET = 17.0/g' "$ios_pbxproj"
+      rm -f "${ios_pbxproj}.bak"
+    fi
     bunx cap sync ios
     rm -rf "$HOME/Library/Caches/org.swift.swiftpm/artifacts"/https___github_com_ionic_team_capacitor_swift_pm_releases_download_*
     xcodebuild \

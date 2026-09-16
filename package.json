@@ -9,7 +9,10 @@
   "files": [
     "android/src/main/",
     "android/ms-intune-app-sdk-android/",
+    "android/intune-mam-sdk/",
+    "android/intune-downlevel-stubs/",
     "android/build.gradle",
+    "android/settings.gradle",
     "dist/",
     "ios/Sources",
     "ios/Tests",

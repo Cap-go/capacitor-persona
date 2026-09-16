@@ -40,15 +40,32 @@ bun run build
 
 case "$platform" in
   android)
-    bunx cap add android
+    if [ ! -d android ]; then
+      bunx cap add android
+    fi
     bunx cap sync android
+    python3 "$repo_root/.github/scripts/patch-intune-example-android.py"
     cd android
     ./gradlew build test
     ;;
   ios)
-    bunx cap add ios
+    if [ ! -d ios ]; then
+      bunx cap add ios
+    fi
+    ios_pbxproj="ios/App/App.xcodeproj/project.pbxproj"
+    if [ -f "$ios_pbxproj" ]; then
+      sed -i.bak 's/IPHONEOS_DEPLOYMENT_TARGET = 15.0/IPHONEOS_DEPLOYMENT_TARGET = 17.0/g' "$ios_pbxproj"
+      rm -f "${ios_pbxproj}.bak"
+    fi
     bunx cap sync ios
-    xcodebuild -project ios/App/App.xcodeproj -scheme App -destination generic/platform=iOS CODE_SIGNING_ALLOWED=NO
+    rm -rf "$HOME/Library/Caches/org.swift.swiftpm/artifacts"/https___github_com_ionic_team_capacitor_swift_pm_releases_download_*
+    xcodebuild \
+      -project ios/App/App.xcodeproj \
+      -scheme App \
+      -destination generic/platform=iOS \
+      -clonedSourcePackagesDirPath "$tmp_root/plugin-example-swiftpm" \
+      -derivedDataPath "$tmp_root/plugin-example-derived-data" \
+      CODE_SIGNING_ALLOWED=NO
     ;;
   web)
     ;;

@@ -9,7 +9,10 @@
   "files": [
     "android/src/main/",
     "android/ms-intune-app-sdk-android/",
+    "android/intune-mam-sdk/",
+    "android/intune-downlevel-stubs/",
     "android/build.gradle",
+    "android/settings.gradle",
     "dist/",
     "ios/Sources",
     "ios/Tests",
@@ -51,6 +54,7 @@
     "watch": "tsc --watch",
     "prepublishOnly": "bun run build",
     "check:wiring": "bun scripts/check-capacitor-plugin-wiring.mjs",
+    "check:cap9-deprecated": "bun scripts/check-cap9-deprecated.mjs",
     "changelog:ai": "node scripts/generate-ai-changelog.mjs"
   },
   "devDependencies": {

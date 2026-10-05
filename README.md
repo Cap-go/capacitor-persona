@@ -210,28 +210,6 @@ Remove all registered listeners for this plugin instance.
 ### Interfaces
 
 
-#### StartInquiryOptions
-
-Input payload used to launch an Inquiry.
-
-Provide at least one of:
-- `templateId`
-- `templateVersion`
-- `inquiryId`
-
-| Prop                  | Type                                                                                                        | Description                                               | Default                   |
-| --------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------- |
-| **`inquiryId`**       | <code>string</code>                                                                                         | Existing Inquiry ID created on your backend.              |                           |
-| **`sessionToken`**    | <code>string</code>                                                                                         | Session token required when resuming an existing Inquiry. |                           |
-| **`templateId`**      | <code>string</code>                                                                                         | Inquiry template ID from Persona Dashboard (recommended). |                           |
-| **`templateVersion`** | <code>string</code>                                                                                         | Inquiry template version ID from Persona Dashboard.       |                           |
-| **`referenceId`**     | <code>string</code>                                                                                         | Your internal user reference.                             |                           |
-| **`accountId`**       | <code>string</code>                                                                                         | Persona account ID.                                       |                           |
-| **`environment`**     | <code><a href="#personaenvironment">PersonaEnvironment</a></code>                                           | Persona environment.                                      | <code>'production'</code> |
-| **`locale`**          | <code>string</code>                                                                                         | Locale override, for example `en`, `fr`, `es`.            |                           |
-| **`fields`**          | <code><a href="#record">Record</a>&lt;string, <a href="#personafieldvalue">PersonaFieldValue</a>&gt;</code> | Optional fields pre-written into the Inquiry.             |                           |
-
-
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
@@ -272,6 +250,20 @@ Payload emitted when an Inquiry errors.
 
 
 ### Type Aliases
+
+
+#### StartInquiryOptions
+
+Input payload used to launch an Inquiry.
+
+Provide exactly one of `inquiryId`, `templateId`, or `templateVersion`.
+
+<code><a href="#startinquirysharedoptions">StartInquirySharedOptions</a> & ( | { /** * Existing Inquiry ID created on your backend. */ inquiryId: string; templateId?: never; templateVersion?: never; } | { /** * Inquiry template ID from Persona Dashboard (recommended). */ templateId: string; inquiryId?: never; templateVersion?: never; } | { /** * Inquiry template version ID from Persona Dashboard. */ templateVersion: string; inquiryId?: never; templateId?: never; } )</code>
+
+
+#### StartInquirySharedOptions
+
+<code>{ /** * Session token required when resuming an existing Inquiry. */ sessionToken?: string; /** * Your internal user reference. */ referenceId?: string; /** * Persona account ID. */ accountId?: string; /** * Persona environment. * * @default 'production' */ environment?: <a href="#personaenvironment">PersonaEnvironment</a>; /** * Locale override, for example `en`, `fr`, `es`. * * Not supported on iOS when `templateVersion` is used. */ locale?: string; /** * Optional fields pre-written into the Inquiry. */ fields?: <a href="#record">Record</a>&lt;string, <a href="#personafieldvalue">PersonaFieldValue</a>&gt;; }</code>
 
 
 #### PersonaEnvironment

@@ -15,34 +15,11 @@ export type PersonaFieldValue = string | number | boolean | string[];
  */
 export type PersonaResultFieldValue = string | number | boolean | string[] | null;
 
-/**
- * Input payload used to launch an Inquiry.
- *
- * Provide at least one of:
- * - `templateId`
- * - `templateVersion`
- * - `inquiryId`
- */
-export interface StartInquiryOptions {
-  /**
-   * Existing Inquiry ID created on your backend.
-   */
-  inquiryId?: string;
-
+type StartInquirySharedOptions = {
   /**
    * Session token required when resuming an existing Inquiry.
    */
   sessionToken?: string;
-
-  /**
-   * Inquiry template ID from Persona Dashboard (recommended).
-   */
-  templateId?: string;
-
-  /**
-   * Inquiry template version ID from Persona Dashboard.
-   */
-  templateVersion?: string;
 
   /**
    * Your internal user reference.
@@ -63,6 +40,8 @@ export interface StartInquiryOptions {
 
   /**
    * Locale override, for example `en`, `fr`, `es`.
+   *
+   * Not supported on iOS when `templateVersion` is used.
    */
   locale?: string;
 
@@ -70,7 +49,40 @@ export interface StartInquiryOptions {
    * Optional fields pre-written into the Inquiry.
    */
   fields?: Record<string, PersonaFieldValue>;
-}
+};
+
+/**
+ * Input payload used to launch an Inquiry.
+ *
+ * Provide exactly one of `inquiryId`, `templateId`, or `templateVersion`.
+ */
+export type StartInquiryOptions = StartInquirySharedOptions &
+  (
+    | {
+        /**
+         * Existing Inquiry ID created on your backend.
+         */
+        inquiryId: string;
+        templateId?: never;
+        templateVersion?: never;
+      }
+    | {
+        /**
+         * Inquiry template ID from Persona Dashboard (recommended).
+         */
+        templateId: string;
+        inquiryId?: never;
+        templateVersion?: never;
+      }
+    | {
+        /**
+         * Inquiry template version ID from Persona Dashboard.
+         */
+        templateVersion: string;
+        inquiryId?: never;
+        templateId?: never;
+      }
+  );
 
 /**
  * Payload emitted when an Inquiry is completed.

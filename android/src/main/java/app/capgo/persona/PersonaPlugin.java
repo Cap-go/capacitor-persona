@@ -59,6 +59,9 @@ public class PersonaPlugin extends Plugin {
         Fields fields = toFields(call.getObject("fields"));
 
         if (inquiryId != null) {
+            if (environment != null) {
+                throw new IllegalArgumentException("The environment option cannot be used when resuming an inquiry by inquiryId.");
+            }
             InquiryBuilder builder = Inquiry.fromInquiry(inquiryId);
             if (sessionToken != null) {
                 builder.sessionToken(sessionToken);
@@ -129,6 +132,9 @@ public class PersonaPlugin extends Plugin {
                 } else {
                     double asDouble = number.doubleValue();
                     if (Math.floor(asDouble) == asDouble) {
+                        if (asDouble < Integer.MIN_VALUE || asDouble > Integer.MAX_VALUE) {
+                            throw new IllegalArgumentException("Integer Persona field '" + key + "' is outside the supported range.");
+                        }
                         builder.field(key, number.intValue());
                     } else {
                         builder.field(key, number.floatValue());
@@ -223,11 +229,11 @@ public class PersonaPlugin extends Plugin {
         }
         if (field instanceof InquiryField.DateField) {
             java.util.Date date = ((InquiryField.DateField) field).getValue();
-            return date != null ? date.getTime() : JSONObject.NULL;
+            return date != null ? date.getTime() / 1000.0 : JSONObject.NULL;
         }
         if (field instanceof InquiryField.DatetimeField) {
             java.util.Date date = ((InquiryField.DatetimeField) field).getValue();
-            return date != null ? date.getTime() : JSONObject.NULL;
+            return date != null ? date.getTime() / 1000.0 : JSONObject.NULL;
         }
         if (field instanceof InquiryField.ChoicesField) {
             return ((InquiryField.ChoicesField) field).getValue();

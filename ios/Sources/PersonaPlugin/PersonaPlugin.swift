@@ -30,17 +30,27 @@ public class PersonaPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     private func buildInquiry(call: CAPPluginCall) throws -> Inquiry {
-        let inquiryId = call.getString("inquiryId")
-        let sessionToken = call.getString("sessionToken")
-        let templateId = call.getString("templateId")
-        let templateVersion = call.getString("templateVersion")
-        let referenceId = call.getString("referenceId")
-        let accountId = call.getString("accountId")
-        let locale = call.getString("locale")
+        func opt(_ key: String) -> String? {
+            guard let value = call.getString(key)?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
+                return nil
+            }
+            return value
+        }
+
+        let inquiryId = opt("inquiryId")
+        let sessionToken = opt("sessionToken")
+        let templateId = opt("templateId")
+        let templateVersion = opt("templateVersion")
+        let referenceId = opt("referenceId")
+        let accountId = opt("accountId")
+        let locale = opt("locale")
         let fields = makeInquiryFields(from: call.getObject("fields") ?? [:])
-        let environment = try parseEnvironment(call.getString("environment"))
+        let environment = try parseEnvironment(opt("environment"))
 
         if let inquiryId {
+            if environment != nil {
+                throw PersonaPluginError.environmentNotAllowedForResume
+            }
             let builder = Inquiry.from(inquiryId: inquiryId, delegate: self)
             if let sessionToken {
                 _ = builder.sessionToken(sessionToken)
@@ -107,6 +117,14 @@ public class PersonaPlugin: CAPPlugin, CAPBridgedPlugin {
 
         for (key, value) in dictionary {
             switch value {
+            case let value as NSNumber:
+                if CFGetTypeID(value) == CFBooleanGetTypeID() {
+                    output[key] = .bool(value.boolValue)
+                } else if value.doubleValue.rounded() == value.doubleValue {
+                    output[key] = .int(value.intValue)
+                } else {
+                    output[key] = .float(value.floatValue)
+                }
             case let value as String:
                 output[key] = .string(value)
             case let value as Bool:
@@ -117,14 +135,6 @@ public class PersonaPlugin: CAPPlugin, CAPBridgedPlugin {
                 output[key] = .float(value)
             case let value as Double:
                 output[key] = .float(Float(value))
-            case let value as NSNumber:
-                if CFGetTypeID(value) == CFBooleanGetTypeID() {
-                    output[key] = .bool(value.boolValue)
-                } else if value.doubleValue.rounded() == value.doubleValue {
-                    output[key] = .int(value.intValue)
-                } else {
-                    output[key] = .float(value.floatValue)
-                }
             case let value as Date:
                 output[key] = .datetime(value)
             case let values as [String]:
@@ -200,6 +210,7 @@ private enum PersonaPluginError: LocalizedError {
     case invalidEnvironment(String)
     case invalidConfiguration
     case templateVersionLocaleUnsupported
+    case environmentNotAllowedForResume
 
     var errorDescription: String? {
         switch self {
@@ -211,6 +222,8 @@ private enum PersonaPluginError: LocalizedError {
             return "Unable to build a Persona inquiry configuration with the provided options."
         case .templateVersionLocaleUnsupported:
             return "The locale option is not supported when starting an inquiry with templateVersion on iOS."
+        case .environmentNotAllowedForResume:
+            return "The environment option cannot be used when resuming an inquiry by inquiryId."
         }
     }
 }

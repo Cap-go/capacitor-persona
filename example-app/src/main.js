@@ -46,21 +46,25 @@ startButton.addEventListener('click', async () => {
     const referenceId = referenceIdInput.value.trim();
     const environment = environmentSelect.value;
 
-    if (!templateId && !inquiryId) {
-      throw new Error('Provide either templateId or inquiryId.');
+    const hasTemplateId = Boolean(templateId);
+    const hasInquiryId = Boolean(inquiryId);
+
+    if (hasTemplateId === hasInquiryId) {
+      throw new Error('Provide exactly one of templateId or inquiryId, not both.');
+    }
+
+    if (hasInquiryId && !sessionToken) {
+      throw new Error('sessionToken is required when starting from inquiryId.');
     }
 
     const options = {
       environment,
     };
 
-    if (templateId) {
+    if (hasTemplateId) {
       options.templateId = templateId;
-    }
-    if (inquiryId) {
+    } else {
       options.inquiryId = inquiryId;
-    }
-    if (sessionToken) {
       options.sessionToken = sessionToken;
     }
     if (referenceId) {

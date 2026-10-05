@@ -44,6 +44,7 @@ case "$platform" in
       bunx cap add android
     fi
     bunx cap sync android
+    python3 "$repo_root/.github/scripts/patch-persona-example-android.py" "$test_app"
     cd android
     ./gradlew build test
     ;;

@@ -2,59 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-
-
-    <meta
-      name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-<title>@capgo/capacitor-intune</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@capgo/capacitor-persona Example</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <main class="container">
-      <h1>@capgo/capacitor-intune</h1>
-      <p class="lead">Exercise Intune MAM enrollment, policy, app config, and MSAL flows from the local linked plugin.</p>
+      <h1>@capgo/capacitor-persona</h1>
+      <p class="lead">Launch a Persona Inquiry from the local linked plugin.</p>
 
-      <label for="scopes">Scopes (JSON array)</label>
-      <textarea id="scopes" rows="3">["https://graph.microsoft.com/.default"]</textarea>
+      <label for="template-id">Template ID</label>
+      <input id="template-id" type="text" value="itmpl_EXAMPLE" />
 
-      <label for="login-hint">Login hint (optional)</label>
-      <input id="login-hint" type="text" placeholder="alex@example.com" />
+      <label for="inquiry-id">Inquiry ID (optional)</label>
+      <input id="inquiry-id" type="text" placeholder="inq_EXAMPLE" />
 
-      <label for="account-id">Account ID</label>
-      <input id="account-id" type="text" placeholder="Filled after sign-in" />
+      <label for="session-token">Session token (optional)</label>
+      <input id="session-token" type="text" placeholder="session token for resumed inquiries" />
 
-      <div class="actions">
-        <button id="acquire-token">Acquire token</button>
-        <button id="acquire-token-silent">Acquire token silently</button>
-      </div>
+      <label for="reference-id">Reference ID (optional)</label>
+      <input id="reference-id" type="text" value="user_123" />
 
-      <div class="actions">
-        <button id="register-enroll">Register and enroll</button>
-        <button id="login-enroll">Login and enroll</button>
-      </div>
+      <label for="environment">Environment</label>
+      <select id="environment">
+        <option value="sandbox" selected>sandbox</option>
+        <option value="production">production</option>
+      </select>
 
-      <div class="actions">
-        <button id="enrolled-account">Enrolled account</button>
-        <button id="app-config">App config</button>
-        <button id="policy">Policy</button>
-      </div>
-
-      <div class="actions">
-        <button id="group-name">Group name</button>
-        <button id="sdk-version">SDK version</button>
-        <button id="diagnostics">Diagnostics</button>
-      </div>
+      <label for="fields-json">Fields JSON (optional)</label>
+      <textarea id="fields-json" rows="5">{
+  "name_first": "Alex",
+  "name_last": "Example",
+  "is_beta_user": true
+}</textarea>
 
       <div class="actions">
-        <button id="logout">Logout</button>
-        <button id="deregister">Deregister and unenroll</button>
+        <button id="start-inquiry">Start inquiry</button>
       </div>
 
-      <pre id="plugin-output">Configure native Intune/MSAL settings, then use the buttons above.</pre>
+      <pre id="plugin-output">Press “Start inquiry” to launch Persona.</pre>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>

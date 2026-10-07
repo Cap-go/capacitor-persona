@@ -120,10 +120,15 @@ public class PersonaPlugin: CAPPlugin, CAPBridgedPlugin {
             case let value as NSNumber:
                 if CFGetTypeID(value) == CFBooleanGetTypeID() {
                     output[key] = .bool(value.boolValue)
-                } else if value.doubleValue.rounded() == value.doubleValue {
-                    output[key] = .int(value.intValue)
                 } else {
-                    output[key] = .float(value.floatValue)
+                    let doubleValue = value.doubleValue
+                    if doubleValue.rounded() == doubleValue,
+                       doubleValue >= Double(Int.min),
+                       doubleValue < -Double(Int.min) {
+                        output[key] = .int(value.intValue)
+                    } else {
+                        output[key] = .float(value.floatValue)
+                    }
                 }
             case let value as String:
                 output[key] = .string(value)

@@ -57,12 +57,11 @@ startButton.addEventListener('click', async () => {
       throw new Error('sessionToken is required when starting from inquiryId.');
     }
 
-    const options = {
-      environment,
-    };
+    const options = {};
 
     if (hasTemplateId) {
       options.templateId = templateId;
+      options.environment = environment;
     } else {
       options.inquiryId = inquiryId;
       options.sessionToken = sessionToken;

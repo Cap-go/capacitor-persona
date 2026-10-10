@@ -1,7 +1,7 @@
 {
-  "name": "intune-plugin-example",
+  "name": "persona-plugin-example",
   "version": "1.0.0",
-  "description": "Example Capacitor app for @capgo/capacitor-intune",
+  "description": "Example Capacitor app for @capgo/capacitor-persona",
   "type": "module",
   "scripts": {
     "start": "vite",
@@ -9,13 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@capacitor/core": "^8.5.2",
-    "@capacitor/android": "^8.5.2",
-    "@capacitor/ios": "^8.5.2",
-    "@capgo/capacitor-intune": "file:.."
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capgo/capacitor-persona": "file:.."
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.2",
-    "vite": "^8.3.0"
+    "@capacitor/cli": "^8.0.0",
+    "vite": "^7.3.1"
   }
 }

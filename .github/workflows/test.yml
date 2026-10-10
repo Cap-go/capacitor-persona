@@ -6,16 +6,15 @@ on:
       - renovate/**
   pull_request:
     branches: [ main ]
-  workflow_call:  # Allow this workflow to be called by other workflows
+  workflow_call:
 
 jobs:
   guard_swiftpm_version:
     runs-on: ubuntu-latest
-    # Keep this job capped at 10 minutes; never raise it unless explicitly asked.
     timeout-minutes: 10
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Enforce capacitor-swift-pm version
         run: |
           set -euo pipefail
@@ -25,25 +24,26 @@ jobs:
           fi
   build_android:
     runs-on: ubuntu-latest
-    # Keep this job capped at 10 minutes; never raise it unless explicitly asked.
     timeout-minutes: 10
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24.x
       - name: Install dependencies
         id: install_code
         run: bun i
+      - name: Verify npm package identity
+        run: bun run check:package-identity
       - name: Check plugin wiring
         run: bun run check:wiring
       - name: Check Cap 9 deprecated APIs
         run: bun run check:cap9-deprecated
       - name: Setup java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: '21'
@@ -55,19 +55,20 @@ jobs:
         run: bash ./.github/scripts/verify-packed-example.sh android
   build_ios:
     runs-on: macOS-latest
-    # Keep this job capped at 10 minutes; never raise it unless explicitly asked.
     timeout-minutes: 10
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24.x
       - name: Install dependencies
         id: install_code
         run: bun i
+      - name: Verify npm package identity
+        run: bun run check:package-identity
       - name: Check plugin wiring
         run: bun run check:wiring
       - name: Check Cap 9 deprecated APIs
@@ -80,16 +81,21 @@ jobs:
         run: bash ./.github/scripts/verify-packed-example.sh ios
   web:
     runs-on: ubuntu-latest
-    # Keep this job capped at 10 minutes; never raise it unless explicitly asked.
     timeout-minutes: 10
     name: 'Build code and test'
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
       - name: Install dependencies
         id: install_code
         run: bun i
+      - name: Verify npm package identity
+        run: bun run check:package-identity
       - name: Check plugin wiring
         run: bun run check:wiring
       - name: Check Cap 9 deprecated APIs

@@ -242,11 +242,11 @@ Payload emitted when an Inquiry is canceled.
 
 Payload emitted when an Inquiry errors.
 
-| Prop            | Type                |
-| --------------- | ------------------- |
-| **`error`**     | <code>string</code> |
-| **`errorCode`** | <code>string</code> |
-| **`cause`**     | <code>string</code> |
+| Prop            | Type                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`error`**     | <code>string</code> | Human-readable description from the Persona SDK.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **`errorCode`** | <code>string</code> | Stable, platform-specific code. iOS (Persona SDK 3.x) emits the `PersonaError` case name: `networking`, `invalidSessionToken`, `oneTimeLinkCodeInvalid`, `rateLimitExceeded`, `camera`, `gps`, `permissions`, `misconfigured`, `other`, or `unknown` for cases added by a newer SDK. Android (Persona SDK 2.x) emits the SDK `ErrorCode` enum name, for example `NetworkError`, `CameraPermissionError`, `SdkConfigurationError`, `SessionTokenError`, `RateLimitExceeded`, `InvalidOneTimeLinkCode`, `UnexpectedError`. |
+| **`cause`**     | <code>string</code> | Additional detail when available. On iOS this is the `InquiryConfigurationError` description for `misconfigured` errors; on Android it is the SDK `cause` string.                                                                                                                                                                                                                                                                                                                                                        |
 
 
 ### Type Aliases
@@ -263,7 +263,7 @@ Provide exactly one of `inquiryId`, `templateId`, or `templateVersion`.
 
 #### StartInquirySharedOptions
 
-<code>{ /** * Session token required when resuming an existing Inquiry. */ sessionToken?: string; /** * Your internal user reference. */ referenceId?: string; /** * Persona account ID. */ accountId?: string; /** * Persona environment. * * @default 'production' */ environment?: <a href="#personaenvironment">PersonaEnvironment</a>; /** * Locale override, for example `en`, `fr`, `es`. * * Not supported on iOS when `templateVersion` is used. */ locale?: string; /** * Optional fields pre-written into the Inquiry. */ fields?: <a href="#record">Record</a>&lt;string, <a href="#personafieldvalue">PersonaFieldValue</a>&gt;; }</code>
+<code>{ /** * Session token required when resuming an existing Inquiry. */ sessionToken?: string; /** * Your internal user reference. */ referenceId?: string; /** * Persona account ID. */ accountId?: string; /** * Persona environment. * * @default 'production' */ environment?: <a href="#personaenvironment">PersonaEnvironment</a>; /** * Locale override, for example `en`, `fr`, `es`. * * Supported with `inquiryId`, `templateId`, and `templateVersion` on both platforms * (iOS support for `templateVersion` requires plugin 8.2.0 or newer). */ locale?: string; /** * Optional fields pre-written into the Inquiry. */ fields?: <a href="#record">Record</a>&lt;string, <a href="#personafieldvalue">PersonaFieldValue</a>&gt;; }</code>
 
 
 #### PersonaEnvironment

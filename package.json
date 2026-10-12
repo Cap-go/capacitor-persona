@@ -50,6 +50,7 @@
     "check:wiring": "bun scripts/check-capacitor-plugin-wiring.mjs",
     "check:package-identity": "node scripts/check-package-identity.mjs",
     "check:cap9-deprecated": "node scripts/check-cap9-deprecated.mjs",
+    "check:persona-pin": "node scripts/check-persona-sdk-pin.mjs",
     "changelog:ai": "node scripts/generate-ai-changelog.mjs"
   },
   "devDependencies": {

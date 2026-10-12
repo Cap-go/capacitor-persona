@@ -1,6 +1,6 @@
 # @capgo/capacitor-persona
 
-<a href="https://capgo.app/?ref=plugin_persona"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-persona" alt="Capgo - Instant updates for Capacitor" /></a>
+<a href="https://capgo.app/?ref=plugin_persona"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-persona" alt="Capgo - Build Capacitor apps with AI, ship updates instantly" /></a>
 
 <div align="center">
   <p><b>Capgo</b>: push fixes to your Capacitor users in minutes, build signed iOS and Android apps without a Mac, and roll back in one click.</p>
@@ -8,6 +8,8 @@
   <p>14-day unlimited free trial. No credit card required</p>
   <p><a href="https://capgo.app/consulting/?ref=plugin_persona">Missing a feature? We'll build the plugin for you 💪</a></p>
 </div>
+
+> 🤖 **Building with an AI coding agent?** Install [Capgo skills](https://capgo.app/skills/?ref=plugin_persona) so Claude Code, Codex, Cursor, Copilot, or Gemini CLI know how to install and use `@capgo/capacitor-persona` in your Capacitor app: `npx skills add Cap-go/capgo-skills`. Then ask your agent: *"Add @capgo/capacitor-persona to my Capacitor app and wire it up."* [Agent setup guides](https://capgo.app/agents/?ref=plugin_persona) · [Hosted MCP](https://capgo.app/docs/ai/mcp/?ref=plugin_persona)
 
 <p align="center">
   <img src="https://capgo.app/icons/plugins/persona.svg" alt="Persona plugin icon" width="300" />

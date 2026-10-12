@@ -78,6 +78,10 @@ export type StartInquiryOptions = StartInquirySharedOptions &
     | {
         /**
          * Inquiry template version ID from Persona Dashboard.
+         *
+         * Validated by the Persona SDK: an invalid value is reported through
+         * `inquiryError` (`errorCode: "misconfigured"` on iOS) rather than by
+         * rejecting the `startInquiry` promise.
          */
         templateVersion: string;
         inquiryId?: never;

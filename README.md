@@ -121,6 +121,7 @@ Plugin 8.2.0 moves iOS to Persona Inquiry SDK 3.11.0 and Android to 2.59.1. No J
 
 - `inquiryError` events on iOS now include `errorCode` (and `cause` for misconfigured inquiries); see `InquiryErrorInfo` below.
 - `locale` now works together with `templateVersion` on iOS.
+- On iOS, an invalid `templateVersion` is now reported through `inquiryError` (`errorCode: "misconfigured"`) instead of rejecting the `startInquiry` promise, matching `templateId` and Android.
 - iOS builds need Xcode 26.2 or newer.
 - Persona removed client-side theming in SDK 3; configure appearance in the Persona Dashboard Theme Editor.
 
@@ -272,7 +273,7 @@ Input payload used to launch an Inquiry.
 
 Provide exactly one of `inquiryId`, `templateId`, or `templateVersion`.
 
-<code><a href="#startinquirysharedoptions">StartInquirySharedOptions</a> & ( | { /** * Existing Inquiry ID created on your backend. */ inquiryId: string; templateId?: never; templateVersion?: never; } | { /** * Inquiry template ID from Persona Dashboard (recommended). */ templateId: string; inquiryId?: never; templateVersion?: never; } | { /** * Inquiry template version ID from Persona Dashboard. */ templateVersion: string; inquiryId?: never; templateId?: never; } )</code>
+<code><a href="#startinquirysharedoptions">StartInquirySharedOptions</a> & ( | { /** * Existing Inquiry ID created on your backend. */ inquiryId: string; templateId?: never; templateVersion?: never; } | { /** * Inquiry template ID from Persona Dashboard (recommended). */ templateId: string; inquiryId?: never; templateVersion?: never; } | { /** * Inquiry template version ID from Persona Dashboard. * * Validated by the Persona SDK: an invalid value is reported through * `inquiryError` (`errorCode: "misconfigured"` on iOS) rather than by * rejecting the `startInquiry` promise. */ templateVersion: string; inquiryId?: never; templateId?: never; } )</code>
 
 
 #### StartInquirySharedOptions

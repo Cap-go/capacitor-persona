@@ -41,7 +41,8 @@ type StartInquirySharedOptions = {
   /**
    * Locale override, for example `en`, `fr`, `es`.
    *
-   * Not supported on iOS when `templateVersion` is used.
+   * Supported with `inquiryId`, `templateId`, and `templateVersion` on both platforms
+   * (iOS support for `templateVersion` requires plugin 8.2.0 or newer).
    */
   locale?: string;
 
@@ -77,6 +78,10 @@ export type StartInquiryOptions = StartInquirySharedOptions &
     | {
         /**
          * Inquiry template version ID from Persona Dashboard.
+         *
+         * Validated by the Persona SDK: an invalid value is reported through
+         * `inquiryError` (`errorCode: "misconfigured"` on iOS) rather than by
+         * rejecting the `startInquiry` promise.
          */
         templateVersion: string;
         inquiryId?: never;
@@ -105,8 +110,29 @@ export interface InquiryCanceledInfo {
  * Payload emitted when an Inquiry errors.
  */
 export interface InquiryErrorInfo {
+  /**
+   * Human-readable description from the Persona SDK.
+   */
   error: string;
+
+  /**
+   * Stable, platform-specific code.
+   *
+   * iOS (Persona SDK 3.x) emits the `PersonaError` case name: `networking`,
+   * `invalidSessionToken`, `oneTimeLinkCodeInvalid`, `rateLimitExceeded`, `camera`,
+   * `gps`, `permissions`, `misconfigured`, `other`, or `unknown` for cases added by a
+   * newer SDK.
+   *
+   * Android (Persona SDK 2.x) emits the SDK `ErrorCode` enum name, for example
+   * `NetworkError`, `CameraPermissionError`, `SdkConfigurationError`, `SessionTokenError`,
+   * `RateLimitExceeded`, `InvalidOneTimeLinkCode`, `UnexpectedError`.
+   */
   errorCode?: string;
+
+  /**
+   * Additional detail when available. On iOS this is the `InquiryConfigurationError`
+   * description for `misconfigured` errors; on Android it is the SDK `cause` string.
+   */
   cause?: string;
 }
 

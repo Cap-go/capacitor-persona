@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Persona SDK v3 Upgrade Plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@500;600;700&display=swap">
+<style>
+  /* Layout: a sticky section index on wide screens beside one reading column of about 72ch;
+     code and tables scroll inside their own boxes so the page never scrolls sideways. */
+  :root {
+    --bg: #f3f5f8;
+    --surface: #ffffff;
+    --surface-2: #e9eef4;
+    --fg: #182230;
+    --muted: #55657a;
+    --line: #d3dbe5;
+    --accent: #1f6f8b;
+    --accent-soft: #dcecf2;
+    --accent-ink: #ffffff;
+    --code-bg: #0e1621;
+    --code-fg: #e6edf3;
+    --good: #1e7f4f;
+    --warn: #9a6700;
+    --crit: #b3261e;
+    --font-display: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
+    --font-body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141b;
+      --surface: #161d27;
+      --surface-2: #1d2631;
+      --fg: #e7ecf2;
+      --muted: #9aa8b7;
+      --line: #2a3542;
+      --accent: #5fb3cc;
+      --accent-soft: #163340;
+      --accent-ink: #0b1218;
+      --code-bg: #0a0f15;
+      --code-fg: #dde5ee;
+      --good: #4cc38a;
+      --warn: #e2b340;
+      --crit: #f2766b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f141b;
+    --surface: #161d27;
+    --surface-2: #1d2631;
+    --fg: #e7ecf2;
+    --muted: #9aa8b7;
+    --line: #2a3542;
+    --accent: #5fb3cc;
+    --accent-soft: #163340;
+    --accent-ink: #0b1218;
+    --code-bg: #0a0f15;
+    --code-fg: #dde5ee;
+    --good: #4cc38a;
+    --warn: #e2b340;
+    --crit: #f2766b;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 1.45rem; font-weight: 600; }
+  h3 { font-size: 1.15rem; font-weight: 600; }
+  h4 { font-size: 1rem; font-weight: 600; }
+  p { margin: 0; }
+  code, kbd { font-family: var(--font-mono); font-size: 0.9em; }
+  :not(pre) > code { background: var(--surface-2); border-radius: 4px; padding: 0.08em 0.35em; }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    position: relative;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  .codewrap { position: relative; min-width: 0; }
+  .copy {
+    position: absolute; top: 8px; right: 8px;
+    font: 500 0.72rem var(--font-display);
+    background: rgba(255,255,255,0.08); color: var(--code-fg);
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 5px;
+    padding: 3px 8px; cursor: pointer;
+  }
+  .copy:hover { background: rgba(255,255,255,0.16); }
+
+  .masthead {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding-block: 32px 24px;
+    padding-inline: 16px;
+  }
+  .masthead-inner { max-width: 1120px; margin: 0 auto; display: grid; gap: 16px; }
+  .eyebrow {
+    font: 600 0.74rem var(--font-display);
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  }
+  .lede { color: var(--muted); max-width: 72ch; font-size: 1.05rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: baseline; gap: 6px;
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 4px 12px; background: var(--bg);
+    font: 500 0.82rem var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip .k { color: var(--muted); }
+  .chip .arrow { color: var(--muted); }
+  .progress { display: grid; gap: 6px; max-width: 520px; }
+  .progress-label { display: flex; justify-content: space-between; font: 500 0.8rem var(--font-display); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .bar > span { display: block; height: 100%; width: 0%; background: var(--accent); transition: width 160ms ease; }
+  @media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } }
+
+  .shell {
+    max-width: 1120px; margin: 0 auto;
+    padding-block: 24px 64px; padding-inline: 16px;
+    display: grid; grid-template-columns: 1fr; gap: 28px;
+  }
+  @media (min-width: 960px) {
+    .shell { grid-template-columns: 220px minmax(0, 1fr); gap: 40px; }
+    .toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; }
+  }
+  .toc { min-width: 0; }
+  .toc h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .toc a { display: block; text-decoration: none; color: var(--fg); padding: 5px 8px; border-radius: 6px; font: 500 0.86rem var(--font-display); }
+  .toc a:hover { background: var(--surface-2); }
+  .toc .sub a { padding-left: 20px; color: var(--muted); font-weight: 500; }
+
+  main { min-width: 0; display: grid; gap: 40px; }
+  section { min-width: 0; display: grid; gap: 14px; scroll-margin-top: 16px; }
+  section > p, section li { max-width: 72ch; }
+  .section-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .section-head .num { font: 600 0.8rem var(--font-mono); color: var(--muted); }
+
+  .kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; max-width: 80ch; }
+  .kv dt { font: 600 0.8rem var(--font-display); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 2px; }
+  .kv dd { margin: 0; min-width: 0; }
+  @media (max-width: 560px) { .kv { grid-template-columns: 1fr; gap: 2px; } .kv dd { margin-bottom: 8px; } }
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-width: 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { font: 600 0.76rem var(--font-display); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+  td.wrap code { white-space: normal; }
+
+  ul.plain, ol.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    max-width: 80ch;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.crit { border-left-color: var(--crit); }
+  .callout strong { font-family: var(--font-display); }
+
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .flow .node {
+    border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+    padding: 8px 12px; font: 600 0.84rem var(--font-display); min-width: 0;
+  }
+  .flow .group { display: flex; flex-wrap: wrap; gap: 6px; border: 1px dashed var(--line); border-radius: 10px; padding: 6px; }
+  .flow .group .node { border-style: solid; }
+  .flow svg { width: 18px; height: 18px; flex: none; color: var(--muted); }
+  .flow .hint { width: 100%; color: var(--muted); font-size: 0.85rem; }
+
+  .task {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 20px;
+  }
+  .task-head { display: grid; gap: 6px; }
+  .task-head .eyebrow { display: flex; gap: 10px; align-items: center; }
+  .task-head .count { font: 500 0.74rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .badge {
+    display: inline-block; border-radius: 4px; padding: 1px 7px;
+    font: 600 0.7rem var(--font-display); letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .badge.ios { background: var(--surface-2); color: var(--fg); }
+  .badge.android { background: var(--surface-2); color: var(--fg); }
+  .badge.docs { background: var(--accent-soft); color: var(--accent); }
+  .badge.ci { background: var(--accent-soft); color: var(--accent); }
+  .badge.verify { background: var(--accent-soft); color: var(--accent); }
+
+  .meta { display: grid; gap: 8px; font-size: 0.92rem; }
+  .meta h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .meta ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+
+  ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: step; }
+  ol.steps > li {
+    counter-increment: step;
+    display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 4px 12px;
+    padding-top: 14px; border-top: 1px solid var(--line);
+    max-width: none;
+  }
+  ol.steps > li > .check { grid-row: 1 / span 99; padding-top: 3px; }
+  ol.steps input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+  ol.steps .step-title { font: 600 1rem var(--font-display); }
+  ol.steps .step-title::before { content: "Step " counter(step) " · "; color: var(--muted); font-weight: 500; }
+  ol.steps .step-body { display: grid; gap: 10px; min-width: 0; }
+  ol.steps .step-body p, ol.steps .step-body li { max-width: 72ch; }
+  li.done .step-title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+  .expect { font-size: 0.92rem; }
+  .expect strong { color: var(--good); font-family: var(--font-display); }
+
+  footer { color: var(--muted); font-size: 0.85rem; max-width: 72ch; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow">@capgo/capacitor-persona · implementation plan · 2026-10-11</div>
+    <h1>Persona SDK v3 Upgrade Plan</h1>
+    <p class="lede">Move the Capacitor bridge from Persona iOS Inquiry SDK 2.41.2 to 3.11.0, bump Android to 2.59.1 for parity, and ship it as 8.2.0 with no breaking change to the JavaScript API.</p>
+    <div class="chips">
+      <span class="chip"><span class="k">plugin</span> 8.1.1 <span class="arrow">→</span> 8.2.0</span>
+      <span class="chip"><span class="k">iOS</span> PersonaInquirySDK2 2.41.2 <span class="arrow">→</span> 3.11.0</span>
+      <span class="chip"><span class="k">Android</span> sdk2:inquiry 2.32.1 <span class="arrow">→</span> 2.59.1</span>
+      <span class="chip"><span class="k">branch</span> billpull/persona-v3-upgrade</span>
+      <span class="chip"><span class="k">refs</span> Cap-go/capacitor-persona#8</span>
+      <span class="chip"><span class="k">scope</span> local commits only · no push</span>
+    </div>
+    <div class="progress">
+      <div class="progress-label"><span>Execution progress (saved in this browser only)</span><span id="progress-text">0 / 0 steps</span></div>
+      <div class="bar"><span id="progress-bar"></span></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" aria-label="Sections">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#research">Research findings</a></li>
+      <li><a href="#constraints">Global constraints</a></li>
+      <li><a href="#review-focus">Review focus</a></li>
+      <li><a href="#files">File structure</a></li>
+      <li><a href="#flow">Task flow</a></li>
+      <li class="sub"><a href="#task-1">1 · Toolchain baseline</a></li>
+      <li class="sub"><a href="#task-2">2 · iOS pin + builder API</a></li>
+      <li class="sub"><a href="#task-3">3 · iOS error codes (TDD)</a></li>
+      <li class="sub"><a href="#task-4">4 · TypeScript docs</a></li>
+      <li class="sub"><a href="#task-5">5 · README setup</a></li>
+      <li class="sub"><a href="#task-6">6 · Android + pin guard</a></li>
+      <li class="sub"><a href="#task-7">7 · Verify and stop</a></li>
+      <li><a href="#deferred">Deferred follow-ups</a></li>
+      <li><a href="#self-review">Self-review</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <h2>Overview</h2>
+      <dl class="kv">
+        <dt>Goal</dt>
+        <dd>Upgrade to Persona iOS Inquiry SDK 3.11.0 (and Android 2.59.1) with no breaking change to <code>src/definitions.ts</code>, released as 8.2.0.</dd>
+        <dt>Architecture</dt>
+        <dd>The plugin is a thin bridge. <code>src/definitions.ts</code> is the contract; <code>PersonaPlugin.swift</code> and <code>PersonaPlugin.java</code> translate <code>startInquiry</code> options into the native builder API and forward SDK callbacks as <code>inquiryComplete</code>, <code>inquiryCanceled</code>, and <code>inquiryError</code> events. Persona v3 removed <code>InquiryConfiguration</code> and typed the iOS error callback, so the iOS bridge switches fully to the builder API and gains a small, unit-tested error mapper. Everything else is a version pin, docs, and a drift guard.</dd>
+        <dt>Tech stack</dt>
+        <dd>Capacitor 8 plugin template (Bun, TypeScript 5.9, Rollup, <code>@capacitor/docgen</code>), Swift 5 language mode via SwiftPM tools 5.9 and CocoaPods, Java 21 Android library (AGP 8.13), GitHub Actions.</dd>
+        <dt>Spec</dt>
+        <dd>No separate spec. Requirements come from upstream issue <a href="https://github.com/Cap-go/capacitor-persona/issues/8">#8</a>, Persona's <a href="https://docs.withpersona.com/migrate-from-ios-sdk-v2-to-v3">iOS v2 to v3 migration guide</a> and <a href="https://docs.withpersona.com/ios-sdk-v2-changelog">iOS changelog</a>, and the repo's <code>AGENTS.md</code>. The research table records every fact the plan relies on and how it was verified.</dd>
+        <dt>Execution</dt>
+        <dd>For agentic workers: use <code>superpowers:subagent-driven-development</code> (recommended) or <code>superpowers:executing-plans</code>, one task at a time. The Markdown twin of this page lives at <code>docs/superpowers/plans/2026-10-11-persona-sdk-v3-upgrade.md</code>.</dd>
+      </dl>
+    </section>
+
+    <section id="research">
+      <h2>Research findings (verified 2026-10-11)</h2>
+      <p>Checked against the published artifacts, not only the docs. Re-verify only if Persona publishes a newer release before implementation.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Fact</th><th>Value</th><th>How verified</th></tr></thead>
+          <tbody>
+            <tr><td>Latest Persona iOS SDK</td><td class="wrap"><strong>3.11.0</strong> (2026-10-05)</td><td>GitHub releases for <code>persona-id/inquiry-ios-2</code>; Persona iOS changelog</td></tr>
+            <tr><td>Where v3 lives</td><td class="wrap">Same repo <code>persona-id/inquiry-ios-2</code>, same package and product <code>PersonaInquirySDK2</code>, same module <code>Persona2</code></td><td><code>Package.swift</code> at tag 3.11.0</td></tr>
+            <tr><td>v3 minimum iOS</td><td class="wrap"><strong>15.0</strong> (3.0.0 required 17.6; 3.0.1 lowered it to 15.0)</td><td><code>Package.swift</code> declares <code>.iOS("15.0")</code>; changelog 3.0.1</td></tr>
+            <tr><td>CocoaPods for v3</td><td class="wrap"><strong>Available again from 3.8.0.</strong> Pods 3.8.0, 3.9.0, 3.10.0, 3.11.0 are on trunk</td><td>CocoaPods CDN shard <code>all_pods_versions_2_b_1.txt</code></td></tr>
+            <tr><td>iOS breaks that touch this plugin</td><td class="wrap">(1) <code>InquiryDelegate.inquiryError(_:)</code> now takes <code>PersonaError</code>, not <code>Error</code>. (2) <code>InquiryConfiguration</code> and <code>Inquiry(config:delegate:)</code> are gone; <code>templateVersion</code> must use <code>Inquiry.from(templateVersion:delegate:)</code></td><td>Negative compile probe of the v2 code against the 3.11.0 xcframework produced exactly these two errors</td></tr>
+            <tr><td>iOS breaks that do not touch it</td><td class="wrap">Theming, async upload APIs, <code>routingCountry</code> removed</td><td>Plugin never used them</td></tr>
+            <tr><td><code>PersonaError</code> cases</td><td class="wrap"><code>.networking</code>, <code>.invalidSessionToken</code>, <code>.oneTimeLinkCodeInvalid</code>, <code>.rateLimitExceeded</code>, <code>.camera</code>, <code>.gps</code>, <code>.permissions</code>, <code>.misconfigured(InquiryConfigurationError)</code>, <code>.other</code>. Conforms to <code>CustomDebugStringConvertible</code>, not <code>LocalizedError</code></td><td><code>arm64-apple-ios.swiftinterface</code> in the 3.11.0 xcframework</td></tr>
+            <tr><td><code>InquiryConfigurationError</code> cases</td><td class="wrap"><code>.invalidTemplateId(String)</code>, <code>.invalidTemplateVersion(String)</code>, <code>.prefixSDKVersionMismatch(String)</code>, <code>.invalidFieldError(String)</code>, <code>.serverConfiguration</code>, <code>.webRtcMisconfiguration</code>, <code>.invalidStaticTemplate</code>, <code>.invalidInlineInquiry</code>. Conforms to <code>LocalizedError</code></td><td>same</td></tr>
+            <tr><td>v3 <code>InquiryTemplateBuilder</code> setters used here</td><td class="wrap"><code>referenceId</code>, <code>accountId</code>, <code>fields</code>, <code>environment</code>, <code>locale</code>, <code>build</code> exist for both <code>from(templateId:)</code> and <code>from(templateVersion:)</code></td><td>same; positive compile probe passed</td></tr>
+            <tr><td>v3 <code>InquiryBuilder</code> (resume by <code>inquiryId</code>)</td><td class="wrap">Has <code>sessionToken</code> and <code>locale</code>; has <strong>no</strong> <code>environment</code> setter, so the existing rejection stays</td><td>same</td></tr>
+            <tr><td><code>InquiryField</code>, <code>Environment</code>, <code>inquiryComplete</code>, <code>inquiryCanceled</code></td><td class="wrap">Unchanged from v2</td><td>same</td></tr>
+            <tr><td><code>InquiryDelegate</code> isolation</td><td class="wrap">Protocol is <code>@MainActor</code>. Conformance compiles unchanged in Swift 5 language mode (what this plugin uses). Swift 6 mode would need <code>@MainActor</code> on the class</td><td>positive compile probe</td></tr>
+            <tr><td>Toolchain compatibility</td><td class="wrap">3.11.0 interface was emitted by Swift 6.3.2. Local Xcode 26.2 (Swift 6.2.3) type-checks device and simulator slices. CI <code>macos-latest</code> is macOS 26 arm64 with Xcode 26.6 default</td><td><code>swiftc -typecheck</code> probes; <code>actions/runner-images</code> README</td></tr>
+            <tr><td>Latest Persona Android SDK</td><td class="wrap"><strong>2.59.1</strong> (2026-10-08). <strong>No Android v3 exists.</strong></td><td>Maven Central metadata; Persona Android changelog</td></tr>
+            <tr><td>Android 2.59.1 API used by plugin</td><td class="wrap"><code>Inquiry.fromInquiry/fromTemplate/fromTemplateVersion</code>, <code>InquiryBuilder.sessionToken/locale</code>, <code>InquiryTemplateBuilder.referenceId/accountId/fields/environment/locale</code>, <code>InquiryResponse.Complete/Cancel/Error</code> getters, <code>Fields.Builder</code>, all <code>InquiryField$*Field</code> subclasses: present and unchanged</td><td><code>javap</code> on <code>dynamic-feature-2.59.1.aar</code></td></tr>
+            <tr><td>Android 2.59.0 "breaking change"</td><td class="wrap">Only affects <code>SentinelEvent.trigger(...)</code>, which the plugin does not use</td><td>Persona Android changelog</td></tr>
+            <tr><td>Android artifact hosting</td><td class="wrap">Persona's own Maven repo stops at 2.55.0; 2.56.0 and later are <strong>Maven Central only</strong>. <code>android/build.gradle</code> already lists <code>mavenCentral()</code> first</td><td><code>maven-metadata.xml</code> on both hosts</td></tr>
+            <tr><td>Repo state</td><td class="wrap"><code>origin/main</code> still contains the Intune plugin (overwritten in <code>578537c</code>). The Persona restore is open as PR #7. This branch is stacked on that restore. The author has <strong>no push access</strong> to <code>Cap-go/capacitor-persona</code> and no fork exists yet</td><td><code>git log</code>, <code>gh pr list</code>, author</td></tr>
+            <tr><td>Capacitor 8 iOS package manager</td><td class="wrap">SPM is the default for new apps; CocoaPods still supported. The packed-example CI builds the SPM project</td><td>Ionic Capacitor 8 announcement; <code>verify-packed-example.sh</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="constraints">
+      <h2>Global constraints</h2>
+      <p>From <code>AGENTS.md</code> and the CI workflows. Every task's requirements include these.</p>
+      <ul class="plain">
+        <li><strong>Version follows the Capacitor major.</strong> The plugin stays on 8.x. This release is <strong>8.2.0</strong>, produced by CI (<code>capacitor-plugin-standard-version</code> in <code>bump_version.yml</code>) from conventional-commit messages. Use <code>feat:</code> on at least one commit. Never use <code>feat!:</code> or a <code>BREAKING CHANGE</code> footer. Never hand-edit <code>"version"</code> in <code>package.json</code> or <code>CHANGELOG.md</code>.</li>
+        <li><strong>No breaking changes in <code>src/definitions.ts</code>.</strong> Only JSDoc edits and additive optional fields.</li>
+        <li><strong>Ship both CocoaPods and SPM.</strong> The podspec and <code>Package.swift</code> must resolve Persona at the same version.</li>
+        <li><strong><code>capacitor-swift-pm</code> stays pinned <code>from: "8.0.0"</code></strong>; the <code>guard_swiftpm_version</code> CI job fails otherwise.</li>
+        <li><strong>iOS deployment target stays 15.0</strong> in both manifests (Persona 3.x needs exactly that).</li>
+        <li><strong>Bun for everything.</strong> <code>bun install</code>, <code>bun run</code>, <code>bunx</code>. Never npm.</li>
+        <li><strong>Java 21 only</strong> for Android. <code>compileSdk</code> 36 and <code>minSdk</code> 24 stay.</li>
+        <li><strong>README API section is generated.</strong> Never edit between the docgen markers; edit <code>src/definitions.ts</code> and run <code>bun run build</code>.</li>
+        <li><strong>Formatting:</strong> <code>bun run fmt</code> before every commit. CI runs <code>bun run lint</code>.</li>
+        <li><strong>Timeouts:</strong> new CI steps stay inside each job's existing 10-minute cap.</li>
+        <li><strong>Commit style:</strong> lower-case conventional commits as in the git log (<code>feat(ios):</code>, <code>fix(ci):</code>, <code>docs:</code>). No Jira prefixes in this repo. End every message with <code>Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;</code>.</li>
+        <li><strong>Behaviour matches on both platforms</strong> unless the SDK makes that impossible; differences go in JSDoc.</li>
+        <li><strong>No push.</strong> The author has no write access to <code>Cap-go/capacitor-persona</code> and has not forked it yet. Every task commits locally only; the plan stops after local verification in Task 7. Pushing and the PR happen later, from a fork, outside this plan.</li>
+      </ul>
+    </section>
+
+    <section id="review-focus">
+      <h2>Review focus</h2>
+      <p>Input classes the SDK change touches that automated tests do not fully exercise. Each names the task that owns its check.</p>
+      <ol class="plain">
+        <li><strong><code>inquiryError</code> with <code>.misconfigured(...)</code> on iOS.</strong> A bad <code>templateId</code> must yield a readable <code>error</code>, <code>errorCode: "misconfigured"</code>, and a <code>cause</code> with the detail, not a generic "operation couldn't be completed" string. Pinned by the XCTest in Task 3.</li>
+        <li><strong><code>templateVersion</code> together with <code>locale</code> on iOS.</strong> Previously rejected on iOS only; must now launch. Pinned by the example-app check in Task 7 and the JSDoc change in Task 4.</li>
+        <li><strong><code>inquiryId</code> together with <code>environment</code> on iOS.</strong> Must still reject with the existing message, since v3's <code>InquiryBuilder</code> has no <code>environment</code> setter and Android rejects it too. Pinned by Task 7.</li>
+        <li><strong>CocoaPods consumers.</strong> <code>pod install</code> must resolve <code>PersonaInquirySDK2</code> 3.11.0 (3.x pods exist only from 3.8.0). Pinned by the pod lint in Task 2 and the drift guard in Task 6.</li>
+        <li><strong>Older Xcode.</strong> The 3.11.0 Swift interface was emitted by Swift 6.3.2 and is verified only with Xcode 26.2 (local) and 26.6 (CI). Pinned by the README statement in Task 5 and CI's iOS job in Task 7.</li>
+      </ol>
+    </section>
+
+    <section id="files">
+      <h2>File structure</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Path</th><th>Change</th><th>Responsibility</th></tr></thead>
+          <tbody>
+            <tr><td><code>Package.swift</code></td><td>Modify line 14 (pin), line 27 (test deps)</td><td>SwiftPM pin to Persona 3.11.0; let tests import <code>Persona2</code></td></tr>
+            <tr><td><code>CapgoCapacitorPersona.podspec</code></td><td>Modify line 17</td><td>CocoaPods pin to 3.11.0</td></tr>
+            <tr><td><code>ios/Sources/PersonaPlugin/PersonaPlugin.swift</code></td><td>Modify <code>buildInquiry</code> 32–103, <code>inquiryError</code> 206–210, <code>PersonaPluginError</code> 213–234</td><td>Builder-only construction; typed error forwarding</td></tr>
+            <tr><td><code>ios/Sources/PersonaPlugin/PersonaErrorMapper.swift</code></td><td>Create</td><td>Pure mapping <code>PersonaError</code> to the <code>inquiryError</code> payload</td></tr>
+            <tr><td><code>ios/Tests/PersonaPluginTests/PersonaErrorMapperTests.swift</code></td><td>Create</td><td>XCTests for the mapper</td></tr>
+            <tr><td><code>ios/Tests/PersonaPluginTests/PersonaPluginTests.swift</code></td><td>Delete</td><td>Placeholder replaced by real tests</td></tr>
+            <tr><td><code>src/definitions.ts</code></td><td>Modify lines 41–46, 104–111</td><td>JSDoc: locale works with <code>templateVersion</code> on iOS; document <code>errorCode</code> values</td></tr>
+            <tr><td><code>README.md</code></td><td>Modify lines 23, 79–94, 96–111; add "Upgrading from 8.1.x"</td><td>Setup instructions, SDK versions, Xcode note, Info.plist keys</td></tr>
+            <tr><td><code>android/build.gradle</code></td><td>Modify line 7</td><td>Default <code>personaInquiryVersion</code> 2.59.1</td></tr>
+            <tr><td><code>scripts/check-persona-sdk-pin.mjs</code></td><td>Create</td><td>Fail CI when podspec and <code>Package.swift</code> disagree</td></tr>
+            <tr><td><code>package.json</code></td><td>Add script after line 52</td><td><code>check:persona-pin</code></td></tr>
+            <tr><td><code>.github/workflows/test.yml</code></td><td>Add a step after lines 44, 75, 102</td><td>Run the guard in all three jobs</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Not changed: <code>src/index.ts</code>, <code>src/web.ts</code>, the Android <code>PersonaPlugin.java</code> (2.59.1 is source-compatible), <code>example-app/**</code>, the example Android patch script (the Persona Maven repo still serves pins of 2.55.0 and older), <code>renovate.json</code>.</p>
+    </section>
+
+    <section id="flow">
+      <h2>Task flow</h2>
+      <div class="flow" aria-label="Task dependencies">
+        <span class="node">1 Baseline</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="node">2 iOS pin + builder</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="node">3 iOS error codes</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="group"><span class="node">4 TS docs</span><span class="node">5 README</span><span class="node">6 Android + guard</span></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="node">7 Verify, stop</span>
+        <span class="hint">Tasks 4, 5, and 6 are independent of each other and can run in any order, or in parallel by separate workers, once Task 3 is committed.</span>
+      </div>
+    </section>
+
+    <!-- ===================== TASK 1 ===================== -->
+    <section class="task" id="task-1">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 1</span><span class="badge verify">setup</span><span class="count">4 steps · no commit</span></div>
+        <h2>Toolchain baseline</h2>
+        <p>Make sure the machine can run every verification command in later tasks, and record the green baseline before touching anything.</p>
+      </div>
+      <div class="meta"><h4>Files</h4><p>None modified.</p></div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t1s1" aria-label="Task 1 step 1 done"></span>
+          <div class="step-title">Install Bun and SwiftLint (both missing locally as of 2026-10-11)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>brew install oven-sh/bun/bun swiftlint
+bun --version          # expect 1.x
+swiftlint version      # expect 0.5x
+xcodebuild -version    # expect Xcode 26.2 or newer
+java -version          # expect 21.x</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t1s2" aria-label="Task 1 step 2 done"></span>
+          <div class="step-title">Install dependencies</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>cd /Users/parlaybillm3/code/ParlayPlay/capacitor-persona
+bun install</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> completes without changing <code>bun.lock</code> (<code>git status --short</code> prints nothing).</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t1s3" aria-label="Task 1 step 3 done"></span>
+          <div class="step-title">Record the baseline on the unmodified branch</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run check:package-identity &amp;&amp; bun run check:wiring &amp;&amp; bun run check:cap9-deprecated
+bun run lint
+bun run verify:web
+bun run verify:ios</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> all exit 0. <code>verify:ios</code> resolves <code>inquiry-ios-2</code> at 2.41.2 and prints <code>** BUILD SUCCEEDED **</code>. If a baseline step fails, fix the environment before continuing; later tasks cannot be judged otherwise.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t1s4" aria-label="Task 1 step 4 done"></span>
+          <div class="step-title">Confirm the branch and starting point</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>git branch --show-current     # billpull/persona-v3-upgrade
+git log --oneline -1          # e88d806 docs: add compressed example app screenshot
+git status --short            # empty</code></pre></div>
+          </div></li>
+      </ol>
+    </section>
+
+    <!-- ===================== TASK 2 ===================== -->
+    <section class="task" id="task-2">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 2</span><span class="badge ios">iOS</span><span class="count">8 steps · 1 commit</span></div>
+        <h2>Pin iOS to Persona 3.11.0 and migrate the Swift bridge to the builder API</h2>
+        <p>Bump both iOS pins, prove the build breaks in exactly the two expected places, then make the minimal code change that restores a green build. The error payload keeps today's shape (just <code>error</code>); Task 3 enriches it.</p>
+      </div>
+      <div class="meta">
+        <h4>Files</h4>
+        <ul>
+          <li>Modify: <code>Package.swift:14</code>, <code>Package.swift:27</code></li>
+          <li>Modify: <code>CapgoCapacitorPersona.podspec:17</code></li>
+          <li>Modify: <code>ios/Sources/PersonaPlugin/PersonaPlugin.swift:32-103</code>, <code>:206-210</code>, <code>:213-234</code></li>
+        </ul>
+        <h4>Interfaces</h4>
+        <ul>
+          <li>Consumes: Persona 3.11.0 <code>Inquiry.from(templateId:delegate:)</code> and <code>Inquiry.from(templateVersion:delegate:)</code> (both return <code>InquiryTemplateBuilder</code>), <code>Inquiry.from(inquiryId:delegate:)</code> (returns <code>InquiryBuilder</code>), <code>InquiryDelegate.inquiryError(_ error: PersonaError)</code>.</li>
+          <li>Produces: <code>PersonaPlugin.inquiryError(_ error: PersonaError)</code>, which Task 3 routes through <code>PersonaErrorMapper.payload(for:)</code>.</li>
+        </ul>
+      </div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t2s1" aria-label="Task 2 step 1 done"></span>
+          <div class="step-title">Bump the SwiftPM pin and give the test target access to <code>Persona2</code></div>
+          <div class="step-body">
+            <p>In <code>Package.swift</code>, change line 14:</p>
+            <div class="codewrap"><pre><code>        .package(url: "https://github.com/persona-id/inquiry-ios-2.git", exact: "3.11.0")</code></pre></div>
+            <p>and change the test target (lines 25–29) to:</p>
+            <div class="codewrap"><pre><code>        .testTarget(
+            name: "PersonaPluginTests",
+            dependencies: [
+                "PersonaPlugin",
+                .product(name: "PersonaInquirySDK2", package: "inquiry-ios-2")
+            ],
+            path: "ios/Tests/PersonaPluginTests")</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s2" aria-label="Task 2 step 2 done"></span>
+          <div class="step-title">Bump the CocoaPods pin</div>
+          <div class="step-body">
+            <p>In <code>CapgoCapacitorPersona.podspec</code>, change line 17:</p>
+            <div class="codewrap"><pre><code>  s.dependency 'PersonaInquirySDK2', '3.11.0'</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s3" aria-label="Task 2 step 3 done"></span>
+          <div class="step-title">Build and confirm it fails for exactly the two expected reasons (the red step)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>rm -rf ~/Library/Developer/Xcode/DerivedData/capacitor-persona-*
+bun run verify:ios 2&gt;&amp;1 | grep -E 'error:|Checking out' | sort -u</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> output contains <code>Checking out 3.11.0 of package 'inquiry-ios-2'</code> and these two errors, nothing else:</p>
+            <div class="codewrap"><pre><code>PersonaPlugin.swift:89: error: cannot find 'InquiryConfiguration' in scope
+PersonaPlugin.swift:205: error: type 'PersonaPlugin' does not conform to protocol 'InquiryDelegate'</code></pre></div>
+            <div class="callout warn"><strong>If other errors appear</strong>, the SDK surface changed after this plan was written. Stop, re-read <code>Persona2.swiftinterface</code> for the new release, and update this plan before continuing.</div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s4" aria-label="Task 2 step 4 done"></span>
+          <div class="step-title">Replace the template branches of <code>buildInquiry</code> with one builder-based branch</div>
+          <div class="step-body">
+            <p>In <code>PersonaPlugin.swift</code>, replace everything from <code>if let templateId {</code> (line 64) through <code>throw PersonaPluginError.missingIdentifier</code> (line 102) with:</p>
+            <div class="codewrap"><pre><code>        let templateBuilder: InquiryTemplateBuilder
+        if let templateId {
+            templateBuilder = Inquiry.from(templateId: templateId, delegate: self)
+        } else if let templateVersion {
+            templateBuilder = Inquiry.from(templateVersion: templateVersion, delegate: self)
+        } else {
+            throw PersonaPluginError.missingIdentifier
+        }
+
+        if let referenceId {
+            _ = templateBuilder.referenceId(referenceId)
+        }
+        if let accountId {
+            _ = templateBuilder.accountId(accountId)
+        }
+        if !fields.isEmpty {
+            _ = templateBuilder.fields(fields)
+        }
+        if let environment {
+            _ = templateBuilder.environment(environment)
+        }
+        if let locale {
+            _ = templateBuilder.locale(locale)
+        }
+
+        return templateBuilder.build()</code></pre></div>
+            <p>The <code>if let inquiryId { ... }</code> resume branch above it stays exactly as it is, including the <code>environmentNotAllowedForResume</code> throw. The result mirrors the Android <code>buildInquiry</code> structure line for line.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s5" aria-label="Task 2 step 5 done"></span>
+          <div class="step-title">Update the delegate error method to the typed signature (minimal payload for now)</div>
+          <div class="step-body">
+            <p>Replace lines 206–210:</p>
+            <div class="codewrap"><pre><code>    public func inquiryError(_ error: PersonaError) {
+        notifyListeners("inquiryError", data: [
+            "error": error.debugDescription
+        ])
+    }</code></pre></div>
+            <p>Why <code>debugDescription</code>: <code>PersonaError</code> is <code>CustomDebugStringConvertible</code> but not <code>LocalizedError</code>, so <code>error.localizedDescription</code> would print the useless <code>The operation couldn't be completed. (Persona2.PersonaError error 0.)</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s6" aria-label="Task 2 step 6 done"></span>
+          <div class="step-title">Remove the two now-unreachable error cases</div>
+          <div class="step-body">
+            <p>In <code>private enum PersonaPluginError</code> delete <code>case invalidConfiguration</code> and <code>case templateVersionLocaleUnsupported</code>, and their two <code>return "..."</code> lines in <code>errorDescription</code>. Three cases remain: <code>missingIdentifier</code>, <code>invalidEnvironment(String)</code>, <code>environmentNotAllowedForResume</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s7" aria-label="Task 2 step 7 done"></span>
+          <div class="step-title">Build and lint (the green step)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run verify:ios 2&gt;&amp;1 | grep -E 'warning:|error:|BUILD'
+bun run swiftlint -- lint
+pod lib lint CapgoCapacitorPersona.podspec --allow-warnings --skip-tests 2&gt;&amp;1 | tail -5</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> <code>** BUILD SUCCEEDED **</code>, zero <code>error:</code> lines, no new warnings mentioning <code>PersonaPlugin.swift</code>, SwiftLint reports 0 violations, and <code>pod lib lint</code> ends with <code>CapgoCapacitorPersona passed validation.</code> The pod lint needs network access to trunk and is the only check proving the 3.11.0 pod resolves.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t2s8" aria-label="Task 2 step 8 done"></span>
+          <div class="step-title">Commit</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run fmt
+git add Package.swift CapgoCapacitorPersona.podspec ios/Sources/PersonaPlugin/PersonaPlugin.swift
+git commit -m "feat(ios): upgrade Persona Inquiry SDK to 3.11.0
+
+Pin PersonaInquirySDK2 3.11.0 in Package.swift and the podspec. Build
+templateVersion inquiries with Inquiry.from(templateVersion:) now that
+InquiryConfiguration is gone, which also lifts the iOS-only restriction
+on locale with templateVersion. Adopt the typed
+InquiryDelegate.inquiryError(_ error: PersonaError) signature.
+
+Refs #8
+
+Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></div>
+          </div></li>
+      </ol>
+    </section>
+
+    <!-- ===================== TASK 3 ===================== -->
+    <section class="task" id="task-3">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 3</span><span class="badge ios">iOS</span><span class="count">7 steps · 1 commit · test-first</span></div>
+        <h2>Surface Persona error codes on iOS</h2>
+        <p>Android already fills <code>errorCode</code> and <code>cause</code> on <code>inquiryError</code>. With <code>PersonaError</code> typed, iOS can too. The mapping lives in its own file so it is unit-testable without a bridge or view controller.</p>
+      </div>
+      <div class="meta">
+        <h4>Files</h4>
+        <ul>
+          <li>Create: <code>ios/Sources/PersonaPlugin/PersonaErrorMapper.swift</code></li>
+          <li>Create: <code>ios/Tests/PersonaPluginTests/PersonaErrorMapperTests.swift</code></li>
+          <li>Delete: <code>ios/Tests/PersonaPluginTests/PersonaPluginTests.swift</code></li>
+          <li>Modify: <code>ios/Sources/PersonaPlugin/PersonaPlugin.swift</code> (<code>inquiryError</code>)</li>
+        </ul>
+        <h4>Interfaces</h4>
+        <ul>
+          <li>Produces: <code>enum PersonaErrorMapper { static func code(for error: PersonaError) -&gt; String; static func payload(for error: PersonaError) -&gt; [String: Any] }</code>. Payload keys: <code>error</code> (always), <code>errorCode</code> (always), <code>cause</code> (only for <code>.misconfigured</code>). These are the exact keys of <code>InquiryErrorInfo</code> in <code>src/definitions.ts</code>.</li>
+          <li>Consumed by: <code>PersonaPlugin.inquiryError(_:)</code>.</li>
+        </ul>
+      </div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t3s1" aria-label="Task 3 step 1 done"></span>
+          <div class="step-title">Write the failing tests</div>
+          <div class="step-body">
+            <p>Create <code>ios/Tests/PersonaPluginTests/PersonaErrorMapperTests.swift</code>:</p>
+            <div class="codewrap"><pre><code>import XCTest
+import Persona2
+@testable import PersonaPlugin
+
+final class PersonaErrorMapperTests: XCTestCase {
+    func testNetworkingErrorProducesMessageAndCodeWithoutCause() {
+        let payload = PersonaErrorMapper.payload(for: .networking)
+
+        XCTAssertEqual(payload["errorCode"] as? String, "networking")
+        XCTAssertEqual(payload["error"] as? String, PersonaError.networking.debugDescription)
+        XCTAssertFalse((payload["error"] as? String ?? "").isEmpty)
+        XCTAssertNil(payload["cause"])
+    }
+
+    func testMisconfiguredErrorCarriesConfigurationDetailAsCause() {
+        let detail = InquiryConfigurationError.invalidTemplateId("itmpl_bad")
+
+        let payload = PersonaErrorMapper.payload(for: .misconfigured(detail))
+
+        XCTAssertEqual(payload["errorCode"] as? String, "misconfigured")
+        XCTAssertEqual(payload["cause"] as? String, detail.localizedDescription)
+        XCTAssertFalse((payload["cause"] as? String ?? "").isEmpty)
+    }
+
+    func testEveryKnownCaseMapsToAStableCode() {
+        let expectations: [(PersonaError, String)] = [
+            (.networking, "networking"),
+            (.invalidSessionToken, "invalidSessionToken"),
+            (.oneTimeLinkCodeInvalid, "oneTimeLinkCodeInvalid"),
+            (.rateLimitExceeded, "rateLimitExceeded"),
+            (.camera, "camera"),
+            (.gps, "gps"),
+            (.permissions, "permissions"),
+            (.misconfigured(.serverConfiguration), "misconfigured"),
+            (.other, "other")
+        ]
+
+        for (error, expectedCode) in expectations {
+            XCTAssertEqual(PersonaErrorMapper.code(for: error), expectedCode, "\(error)")
+        }
+    }
+}</code></pre></div>
+            <p>Delete the placeholder:</p>
+            <div class="codewrap"><pre><code>git rm ios/Tests/PersonaPluginTests/PersonaPluginTests.swift</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t3s2" aria-label="Task 3 step 2 done"></span>
+          <div class="step-title">Run the tests and confirm they fail to compile</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>xcodebuild test -scheme CapgoCapacitorPersona \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' 2&gt;&amp;1 \
+  | grep -E 'error:|TEST (SUCCEEDED|FAILED)' | sort -u</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> <code>error: cannot find 'PersonaErrorMapper' in scope</code> and <code>** TEST FAILED **</code>.</p>
+            <div class="callout">CI's <code>verify:ios</code> only builds for <code>generic/platform=iOS</code> and never runs XCTests, so this simulator run is the only place these tests execute. Keep running it locally. The command was verified on 2026-10-11: the <code>CapgoCapacitorPersona</code> scheme includes the <code>PersonaPluginTests</code> target and the placeholder test ran green in about 16 seconds after the first build.</div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t3s3" aria-label="Task 3 step 3 done"></span>
+          <div class="step-title">Implement the mapper</div>
+          <div class="step-body">
+            <p>Create <code>ios/Sources/PersonaPlugin/PersonaErrorMapper.swift</code>:</p>
+            <div class="codewrap"><pre><code>import Foundation
+import Persona2
+
+/// Translates Persona's typed `PersonaError` into the `inquiryError` event payload.
+///
+/// Keys mirror `InquiryErrorInfo` in `src/definitions.ts`. `errorCode` values are the
+/// `PersonaError` case names so JavaScript can switch on them; Android emits its own
+/// SDK enum names, which is documented in `definitions.ts`.
+enum PersonaErrorMapper {
+    static func code(for error: PersonaError) -&gt; String {
+        switch error {
+        case .networking:
+            return "networking"
+        case .invalidSessionToken:
+            return "invalidSessionToken"
+        case .oneTimeLinkCodeInvalid:
+            return "oneTimeLinkCodeInvalid"
+        case .rateLimitExceeded:
+            return "rateLimitExceeded"
+        case .camera:
+            return "camera"
+        case .gps:
+            return "gps"
+        case .permissions:
+            return "permissions"
+        case .misconfigured:
+            return "misconfigured"
+        case .other:
+            return "other"
+        @unknown default:
+            return "unknown"
+        }
+    }
+
+    static func payload(for error: PersonaError) -&gt; [String: Any] {
+        var payload: [String: Any] = [
+            "error": error.debugDescription,
+            "errorCode": code(for: error)
+        ]
+
+        if case .misconfigured(let configurationError) = error {
+            payload["cause"] = configurationError.localizedDescription
+        }
+
+        return payload
+    }
+}</code></pre></div>
+            <p><code>@unknown default</code> is required: <code>Persona2</code> is built with library evolution, so <code>PersonaError</code> is non-frozen and Swift warns on an otherwise-exhaustive switch.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t3s4" aria-label="Task 3 step 4 done"></span>
+          <div class="step-title">Run the tests and confirm they pass</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>xcodebuild test -scheme CapgoCapacitorPersona \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' 2&gt;&amp;1 \
+  | grep -E 'Test Case.*(passed|failed)|Executed|TEST (SUCCEEDED|FAILED)'</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> three <code>passed</code> lines, <code>Executed 3 tests, with 0 failures</code>, <code>** TEST SUCCEEDED **</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t3s5" aria-label="Task 3 step 5 done"></span>
+          <div class="step-title">Wire the mapper into the delegate</div>
+          <div class="step-body">
+            <p>In <code>PersonaPlugin.swift</code>, replace the <code>inquiryError</code> body from Task 2 with:</p>
+            <div class="codewrap"><pre><code>    public func inquiryError(_ error: PersonaError) {
+        notifyListeners("inquiryError", data: PersonaErrorMapper.payload(for: error))
+    }</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t3s6" aria-label="Task 3 step 6 done"></span>
+          <div class="step-title">Build for device and lint</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run verify:ios 2&gt;&amp;1 | grep -E 'warning:|error:|BUILD'
+bun run swiftlint -- lint</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> <code>** BUILD SUCCEEDED **</code>, no errors or warnings from plugin sources, 0 SwiftLint violations.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t3s7" aria-label="Task 3 step 7 done"></span>
+          <div class="step-title">Commit</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run fmt
+git add ios/Sources/PersonaPlugin/PersonaErrorMapper.swift ios/Tests/PersonaPluginTests/
+git add ios/Sources/PersonaPlugin/PersonaPlugin.swift
+git commit -m "feat(ios): include errorCode and cause in inquiryError events
+
+Map every PersonaError case to a stable errorCode string and attach the
+InquiryConfigurationError description as cause for misconfigured
+inquiries, matching the fields Android already reports.
+
+Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></div>
+          </div></li>
+      </ol>
+    </section>
+
+    <!-- ===================== TASK 4 ===================== -->
+    <section class="task" id="task-4">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 4</span><span class="badge docs">TypeScript</span><span class="count">4 steps · 1 commit</span></div>
+        <h2>Update the TypeScript contract documentation</h2>
+        <p>No type shapes change. Two JSDoc blocks become accurate again, and <code>bun run build</code> regenerates the README API section from them.</p>
+      </div>
+      <div class="meta"><h4>Files</h4><ul><li>Modify: <code>src/definitions.ts:41-46</code>, <code>src/definitions.ts:104-111</code></li><li>Regenerated: <code>README.md</code> (docgen section only)</li></ul></div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t4s1" aria-label="Task 4 step 1 done"></span>
+          <div class="step-title">Fix the <code>locale</code> doc comment (lines 41–46)</div>
+          <div class="step-body">
+            <p>Replace the comment so it reads:</p>
+            <div class="codewrap"><pre><code>  /**
+   * Locale override, for example `en`, `fr`, `es`.
+   *
+   * Supported with `inquiryId`, `templateId`, and `templateVersion` on both platforms
+   * (iOS support for `templateVersion` requires plugin 8.2.0 or newer).
+   */
+  locale?: string;</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t4s2" aria-label="Task 4 step 2 done"></span>
+          <div class="step-title">Document <code>errorCode</code> and <code>cause</code> (lines 104–111)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>/**
+ * Payload emitted when an Inquiry errors.
+ */
+export interface InquiryErrorInfo {
+  /**
+   * Human-readable description from the Persona SDK.
+   */
+  error: string;
+
+  /**
+   * Stable, platform-specific code.
+   *
+   * iOS (Persona SDK 3.x) emits the `PersonaError` case name: `networking`,
+   * `invalidSessionToken`, `oneTimeLinkCodeInvalid`, `rateLimitExceeded`, `camera`,
+   * `gps`, `permissions`, `misconfigured`, `other`, or `unknown` for cases added by a
+   * newer SDK.
+   *
+   * Android (Persona SDK 2.x) emits the SDK `ErrorCode` enum name, for example
+   * `NetworkError`, `CameraPermissionError`, `SdkConfigurationError`, `SessionTokenError`,
+   * `RateLimitExceeded`, `InvalidOneTimeLinkCode`, `UnexpectedError`.
+   */
+  errorCode?: string;
+
+  /**
+   * Additional detail when available. On iOS this is the `InquiryConfigurationError`
+   * description for `misconfigured` errors; on Android it is the SDK `cause` string.
+   */
+  cause?: string;
+}</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t4s3" aria-label="Task 4 step 3 done"></span>
+          <div class="step-title">Build, lint, and check the generated README</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run build
+bun run lint
+git diff --stat README.md
+git diff README.md | grep -E '^\+.*(Supported with|Stable, platform-specific)' | head -2</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> <code>tsc</code> and Rollup succeed, lint exits 0, <code>README.md</code> changes only inside the <code>&lt;docgen-api&gt;</code> section, and both new doc strings appear in the diff.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t4s4" aria-label="Task 4 step 4 done"></span>
+          <div class="step-title">Commit</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>git add src/definitions.ts README.md
+git commit -m "docs(definitions): describe errorCode values and iOS locale support
+
+Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></div>
+          </div></li>
+      </ol>
+    </section>
+
+    <!-- ===================== TASK 5 ===================== -->
+    <section class="task" id="task-5">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 5</span><span class="badge docs">README</span><span class="count">6 steps · 1 commit</span></div>
+        <h2>Update hand-written README setup sections</h2>
+        <p>Only the prose outside the docgen markers is edited here.</p>
+      </div>
+      <div class="meta"><h4>Files</h4><ul><li>Modify: <code>README.md:23</code>, <code>README.md:79-94</code>, <code>README.md:96-111</code>; add a subsection before <code>## API</code> (line 113)</li></ul></div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t5s1" aria-label="Task 5 step 1 done"></span>
+          <div class="step-title">Update the feature bullet (line 23)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>- Native Persona SDK integration on iOS (`PersonaInquirySDK2` 3.x) and Android (`com.withpersona.sdk2:inquiry` 2.x)</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t5s2" aria-label="Task 5 step 2 done"></span>
+          <div class="step-title">Rewrite the iOS setup section (lines 79–94)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>## iOS setup
+
+1. Run `npx cap sync ios`.
+2. Ensure the iOS deployment target is **15.0** or newer (matches the plugin podspec and `Package.swift`).
+3. Build with **Xcode 26.2 or newer**. Persona 3.x ships as a binary XCFramework whose Swift interface is produced by a current Swift 6 toolchain; older Xcode releases are not verified.
+4. Add usage descriptions to `ios/App/App/Info.plist`. Persona requires camera and location strings for every template, and microphone when a template records video:
+
+```xml
+&lt;key&gt;NSCameraUsageDescription&lt;/key&gt;
+&lt;string&gt;We use the camera to verify your identity.&lt;/string&gt;
+&lt;key&gt;NSLocationWhenInUseUsageDescription&lt;/key&gt;
+&lt;string&gt;We use your location during identity verification.&lt;/string&gt;
+&lt;key&gt;NSMicrophoneUsageDescription&lt;/key&gt;
+&lt;string&gt;We use the microphone when a verification records video.&lt;/string&gt;
+&lt;key&gt;NSBluetoothAlwaysUsageDescription&lt;/key&gt;
+&lt;string&gt;We use Bluetooth during identity verification when required.&lt;/string&gt;
+```
+
+Templates that use NFC additionally need `NFCReaderUsageDescription`, the NFC Tag Reading capability, and the ISO7816 application identifiers listed in Persona's [iOS integration guide](https://docs.withpersona.com/ios-sdk-v2-integration-guide).
+
+5. Dependency resolution: Swift Package Manager projects (the Capacitor 8 default) resolve `inquiry-ios-2` at exactly **3.11.0** through the plugin `Package.swift`. CocoaPods projects resolve the `PersonaInquirySDK2` **3.11.0** pod (Persona resumed CocoaPods publishing with 3.8.0).</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t5s3" aria-label="Task 5 step 3 done"></span>
+          <div class="step-title">Update the Android SDK line (line 111)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>3. The plugin library targets **minSdk 24** and depends on `com.withpersona.sdk2:inquiry` (default **2.59.1**, overridable with `personaInquiryVersion` in Gradle). Versions 2.56.0 and newer are published to Maven Central only; the Persona Maven repository above still serves older pins.</code></pre></div>
+            <p>The Gradle default itself changes in Task 6; both land in the same PR, so the README never claims a version the plugin does not ship.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t5s4" aria-label="Task 5 step 4 done"></span>
+          <div class="step-title">Add an upgrade note before <code>## API</code></div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>## Upgrading from 8.1.x
+
+Plugin 8.2.0 moves iOS to Persona Inquiry SDK 3.11.0 and Android to 2.59.1. No JavaScript changes are required.
+
+- `inquiryError` events on iOS now include `errorCode` (and `cause` for misconfigured inquiries); see `InquiryErrorInfo` below.
+- `locale` now works together with `templateVersion` on iOS.
+- iOS builds need Xcode 26.2 or newer.
+- Persona removed client-side theming in SDK 3; configure appearance in the Persona Dashboard Theme Editor.</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t5s5" aria-label="Task 5 step 5 done"></span>
+          <div class="step-title">Lint and verify the docgen section is untouched</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run prettier -- --check
+git diff README.md</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> Prettier passes; the diff contains no changed lines between <code>&lt;docgen-index&gt;</code> and <code>&lt;/docgen-api&gt;</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t5s6" aria-label="Task 5 step 6 done"></span>
+          <div class="step-title">Commit</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>git add README.md
+git commit -m "docs: document Persona SDK 3.x setup, Xcode requirement, and 8.2.0 upgrade notes
+
+Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></div>
+          </div></li>
+      </ol>
+    </section>
+
+    <!-- ===================== TASK 6 ===================== -->
+    <section class="task" id="task-6">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 6</span><span class="badge android">Android</span><span class="badge ci">CI</span><span class="count">7 steps · 1 commit</span></div>
+        <h2>Android parity bump and SDK pin drift guard</h2>
+        <p>Two small, independent changes that keep the two platforms and the two iOS manifests in step.</p>
+      </div>
+      <div class="meta">
+        <h4>Files</h4>
+        <ul>
+          <li>Modify: <code>android/build.gradle:7</code></li>
+          <li>Create: <code>scripts/check-persona-sdk-pin.mjs</code></li>
+          <li>Modify: <code>package.json</code> (scripts, after line 52)</li>
+          <li>Modify: <code>.github/workflows/test.yml</code> (after lines 44, 75, 102)</li>
+        </ul>
+        <h4>Interfaces</h4>
+        <ul><li>Produces: <code>bun run check:persona-pin</code>. Exit 0 when <code>Package.swift</code> <code>exact:</code> and the podspec <code>s.dependency 'PersonaInquirySDK2', '&lt;v&gt;'</code> agree; exit 1 with both values printed otherwise. Also prints the Android default.</li></ul>
+      </div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t6s1" aria-label="Task 6 step 1 done"></span>
+          <div class="step-title">Bump the Android default</div>
+          <div class="step-body">
+            <p><code>android/build.gradle</code> line 7:</p>
+            <div class="codewrap"><pre><code>    personaInquiryVersion = project.findProperty('personaInquiryVersion') ?: '2.59.1'</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t6s2" aria-label="Task 6 step 2 done"></span>
+          <div class="step-title">Build and run Android unit tests</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run verify:android 2&gt;&amp;1 | grep -E 'BUILD|FAILED|error:|warning:.*PersonaPlugin' | tail -5</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> <code>BUILD SUCCESSFUL</code>, no compiler errors or deprecation warnings in <code>PersonaPlugin.java</code>. Gradle resolves <code>com.withpersona.sdk2:inquiry:2.59.1</code> from <code>repo1.maven.org</code> (run with <code>--info</code> and grep <code>inquiry-2.59.1</code> to see it).</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t6s3" aria-label="Task 6 step 3 done"></span>
+          <div class="step-title">Run the not-yet-existing guard so the failure mode is known</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run check:persona-pin</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> <code>error: Missing script "check:persona-pin"</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t6s4" aria-label="Task 6 step 4 done"></span>
+          <div class="step-title">Create the script and register it</div>
+          <div class="step-body">
+            <p><code>scripts/check-persona-sdk-pin.mjs</code>:</p>
+            <div class="codewrap"><pre><code>#!/usr/bin/env node
+/**
+ * Persona SDK pin guard.
+ *
+ * Fails when Package.swift and the podspec disagree on the PersonaInquirySDK2 version,
+ * which happens when a dependency bot updates one manifest but not the other.
+ *
+ * Usage:
+ *   node scripts/check-persona-sdk-pin.mjs
+ *   node scripts/check-persona-sdk-pin.mjs --dir path/to/plugin
+ */
+
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
+function parseArgs(argv) {
+  const out = { dir: process.cwd() };
+  for (let i = 2; i &lt; argv.length; i++) {
+    if (argv[i] === '--dir') out.dir = path.resolve(argv[++i] || '.');
+  }
+  return out;
+}
+
+const { dir } = parseArgs(process.argv);
+
+const packageSwift = readFileSync(path.join(dir, 'Package.swift'), 'utf8');
+const podspec = readFileSync(path.join(dir, 'CapgoCapacitorPersona.podspec'), 'utf8');
+const gradle = readFileSync(path.join(dir, 'android', 'build.gradle'), 'utf8');
+
+const spmVersion = /inquiry-ios-2\.git"\s*,\s*exact:\s*"([^"]+)"/.exec(packageSwift)?.[1];
+const podVersion = /s\.dependency\s+'PersonaInquirySDK2'\s*,\s*'([^']+)'/.exec(podspec)?.[1];
+const androidDefault = /personaInquiryVersion\s*=\s*project\.findProperty\('personaInquiryVersion'\)\s*\?:\s*'([^']+)'/.exec(gradle)?.[1];
+
+const errors = [];
+if (!spmVersion) errors.push('Package.swift: could not find an exact: pin for inquiry-ios-2');
+if (!podVersion) errors.push("podspec: could not find s.dependency 'PersonaInquirySDK2', '&lt;version&gt;'");
+if (!androidDefault) errors.push('android/build.gradle: could not find the personaInquiryVersion default');
+if (spmVersion &amp;&amp; podVersion &amp;&amp; spmVersion !== podVersion) {
+  errors.push(`iOS pins differ: Package.swift=${spmVersion} podspec=${podVersion}`);
+}
+
+if (errors.length) {
+  console.error('[persona-pin] FAIL');
+  for (const e of errors) console.error(`- ${e}`);
+  process.exit(1);
+}
+
+console.log(`[persona-pin] OK iOS PersonaInquirySDK2 ${spmVersion}, Android com.withpersona.sdk2:inquiry default ${androidDefault}`);</code></pre></div>
+            <p>Add to <code>package.json</code> scripts, directly after <code>"check:cap9-deprecated"</code>:</p>
+            <div class="codewrap"><pre><code>    "check:persona-pin": "node scripts/check-persona-sdk-pin.mjs",</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t6s5" aria-label="Task 6 step 5 done"></span>
+          <div class="step-title">Prove the guard passes on the repo and fails on a mismatch</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run check:persona-pin
+# expected: [persona-pin] OK iOS PersonaInquirySDK2 3.11.0, Android com.withpersona.sdk2:inquiry default 2.59.1
+
+FIX=/private/tmp/claude-501/-Users-parlaybillm3-code-ParlayPlay-capacitor-persona/cd1a7e03-0017-4580-ba54-6c13b86a989e/scratchpad/pin-fixture
+rm -rf "$FIX" &amp;&amp; mkdir -p "$FIX/android"
+cp Package.swift "$FIX/" &amp;&amp; cp android/build.gradle "$FIX/android/"
+sed "s/'3.11.0'/'3.10.0'/" CapgoCapacitorPersona.podspec &gt; "$FIX/CapgoCapacitorPersona.podspec"
+node scripts/check-persona-sdk-pin.mjs --dir "$FIX"; echo "exit=$?"
+# expected: "- iOS pins differ: Package.swift=3.11.0 podspec=3.10.0" and exit=1</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t6s6" aria-label="Task 6 step 6 done"></span>
+          <div class="step-title">Run the guard in CI</div>
+          <div class="step-body">
+            <p>In <code>.github/workflows/test.yml</code>, add this step immediately after each <code>run: bun run check:cap9-deprecated</code> (three places: <code>build_android</code>, <code>build_ios</code>, <code>web</code>):</p>
+            <div class="codewrap"><pre><code>      - name: Check Persona SDK pins
+        run: bun run check:persona-pin</code></pre></div>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t6s7" aria-label="Task 6 step 7 done"></span>
+          <div class="step-title">Lint and commit</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run fmt
+bun run lint
+git add android/build.gradle scripts/check-persona-sdk-pin.mjs package.json .github/workflows/test.yml
+git commit -m "feat(android): bump Persona Inquiry SDK default to 2.59.1 and guard iOS pin drift
+
+Android has no SDK v3; 2.59.1 is the current release and is source
+compatible with the existing bridge. Add check:persona-pin so Package.swift
+and the podspec can never ship different Persona versions.
+
+Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></div>
+          </div></li>
+      </ol>
+    </section>
+
+    <!-- ===================== TASK 7 ===================== -->
+    <section class="task" id="task-7">
+      <div class="task-head">
+        <div class="eyebrow"><span>Task 7</span><span class="badge verify">verification</span><span class="count">5 steps · no push</span></div>
+        <h2>Full verification and example-app smoke test</h2>
+        <p>The plan ends with this task. Nothing is pushed. No files change here unless verification finds a defect.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="check"><input type="checkbox" id="t7s1" aria-label="Task 7 step 1 done"></span>
+          <div class="step-title">Run every CI check locally</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>bun run check:package-identity &amp;&amp; bun run check:wiring &amp;&amp; bun run check:cap9-deprecated &amp;&amp; bun run check:persona-pin
+bun run lint
+bun run verify            # ios, android, web in sequence
+bash .github/scripts/verify-packed-example.sh web
+bash .github/scripts/verify-packed-example.sh android
+bash .github/scripts/verify-packed-example.sh ios</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> every command exits 0. The iOS packed-example run shows <code>Checking out 3.11.0 of package 'inquiry-ios-2'</code> and <code>** BUILD SUCCEEDED **</code>. <code>RUNNER_TEMP</code> is unset locally, so the script uses <code>mktemp -d</code> and the three runs are independent.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t7s2" aria-label="Task 7 step 2 done"></span>
+          <div class="step-title">Manual smoke test on the iOS simulator with a sandbox template</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>cd example-app &amp;&amp; bun install &amp;&amp; bun run build
+bunx cap add ios        # first time only
+bunx cap sync ios
+bunx cap open ios</code></pre></div>
+            <p>In Xcode, add the Info.plist keys from the README to <code>App/App/Info.plist</code>, run on iPhone 17 Pro, then exercise the web UI:</p>
+            <div class="tablewrap">
+              <table>
+                <thead><tr><th>Scenario</th><th>Inputs</th><th>Expected in the output panel</th></tr></thead>
+                <tbody>
+                  <tr><td>Happy path</td><td class="wrap">Real sandbox <code>templateId</code>, environment <code>sandbox</code>, default fields</td><td class="wrap"><code>startInquiry launched</code>; Persona UI opens; then <code>inquiryComplete</code> with <code>inquiryId</code>, <code>status</code>, <code>fields</code> after finishing, or <code>inquiryCanceled</code> after dismissing</td></tr>
+                  <tr><td>Review focus 1</td><td class="wrap"><code>templateId</code> = <code>itmpl_doesnotexist</code>, environment <code>sandbox</code></td><td class="wrap"><code>inquiryError</code> with <code>errorCode: "misconfigured"</code>, non-empty <code>error</code>, non-empty <code>cause</code></td></tr>
+                  <tr><td>Review focus 2</td><td class="wrap">A real <code>itmplv_...</code> in the Template ID field after temporarily changing <code>options.templateId</code> to <code>options.templateVersion</code> in <code>src/main.js</code>, plus <code>locale: 'fr'</code> added to <code>options</code></td><td class="wrap">Persona UI opens in French; no "locale option is not supported" rejection</td></tr>
+                  <tr><td>Review focus 3</td><td class="wrap"><code>inquiryId</code> + <code>sessionToken</code> + environment <code>sandbox</code></td><td class="wrap"><code>Error: The environment option cannot be used when resuming an inquiry by inquiryId.</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Revert temporary edits afterwards: <code>git checkout example-app/src/main.js</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t7s3" aria-label="Task 7 step 3 done"></span>
+          <div class="step-title">Android smoke test (same table)</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>cd example-app &amp;&amp; bunx cap add android &amp;&amp; bunx cap sync android
+python3 ../.github/scripts/patch-persona-example-android.py .
+bunx cap open android</code></pre></div>
+            <p>Run on an API 34+ emulator and repeat the four scenarios. For Review focus 1, Android reports <code>SdkConfigurationError</code> or <code>IntegrationError</code> (its SDK enum name), not <code>misconfigured</code>; that difference is documented in <code>definitions.ts</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t7s4" aria-label="Task 7 step 4 done"></span>
+          <div class="step-title">Confirm the commit series and version expectations</div>
+          <div class="step-body">
+            <div class="codewrap"><pre><code>git log --oneline main..HEAD | head -12
+git diff main...HEAD --stat | tail -1
+grep '"version"' package.json      # still 8.1.1; CI bumps to 8.2.0 on merge</code></pre></div>
+            <p class="expect"><strong>Expected:</strong> at least one <code>feat(...)</code> commit (Tasks 2, 3, 6); none carries <code>!</code> or <code>BREAKING CHANGE</code>.</p>
+          </div></li>
+        <li><span class="check"><input type="checkbox" id="t7s5" aria-label="Task 7 step 5 done"></span>
+          <div class="step-title">Stop here. Do not push.</div>
+          <div class="step-body">
+            <div class="callout crit"><strong>No push access.</strong> The author cannot push to <code>Cap-go/capacitor-persona</code> and no fork exists yet. The plan ends with the commits on the local <code>billpull/persona-v3-upgrade</code> branch.</div>
+            <p>Confirm nothing has left the machine:</p>
+            <div class="codewrap"><pre><code>git remote -v                                 # only origin -&gt; Cap-go/capacitor-persona
+git log origin/main..HEAD --oneline           # the 7 restore commits plus this plan's 5 commits, all local
+git status --short                            # empty</code></pre></div>
+            <p><strong>Later, outside this plan, once a fork exists:</strong> <code>gh repo fork Cap-go/capacitor-persona --remote --remote-name fork</code>, push the branch to <code>fork</code>, and open the PR with <code>--head &lt;github-user&gt;:billpull/persona-v3-upgrade</code> against <code>cursor/restore-persona-plugin-afcd</code> while PR #7 is open, retargeting to <code>main</code> after #7 merges, with <code>Closes #8</code> in the body. Two consequences of a fork PR: <code>test.yml</code> still runs on <code>pull_request</code> so CI coverage is unchanged, but the <code>/publish-beta</code> workflow refuses fork PRs because it needs repository secrets. The 8.2.0 tag and npm publish happen only when a maintainer merges to <code>main</code>.</p>
+          </div></li>
+      </ol>
+    </section>
+
+    <section id="deferred">
+      <h2>Deferred follow-ups (not in this plan)</h2>
+      <p>Both SDK versions chosen here expose these on both platforms; each is an additive minor release on its own.</p>
+      <ul class="plain">
+        <li><code>environmentId</code> (pin a specific sandbox environment) on template builders.</li>
+        <li><code>host: 'fedramp'</code> via <code>PersonaHost.fedramp</code> (iOS) / <code>PersonaHost.FedRamp</code> (Android).</li>
+        <li>New entry points <code>oneTimeLinkCode</code> and <code>relaySessionToken</code>.</li>
+        <li><code>shareToken</code> + <code>fieldMappings</code>, <code>redirectUri</code>, <code>styleVariant</code>.</li>
+        <li>An <code>inquiryEvent</code> listener forwarding <code>inquiryEventOccurred</code> (<code>start</code> with <code>inquiryId</code>/<code>sessionToken</code>, <code>pageChange</code> with <code>name</code>/<code>path</code>) and the Android equivalent.</li>
+        <li>Lowering Android <code>minSdk</code> from 24 to the SDK's 23 (a Capacitor-level decision).</li>
+        <li>Extracting iOS <code>startInquiry</code> option parsing into a pure, testable type so Review focus items 2 and 3 become XCTests instead of manual checks.</li>
+      </ul>
+    </section>
+
+    <section id="self-review">
+      <h2>Self-review</h2>
+      <ul class="plain">
+        <li><strong>Spec coverage:</strong> issue #8 asks for iOS v3 and a release bump. Tasks 2 and 3 deliver v3; versioning is handled by CI through <code>feat:</code> commits, confirmed in Task 7 step 4. The PR itself is out of scope until a fork exists (Task 7 step 5).</li>
+        <li><strong>Placeholder scan:</strong> none; every step has concrete code or commands.</li>
+        <li><strong>Type consistency:</strong> <code>PersonaErrorMapper.code(for:)</code> and <code>payload(for:)</code> are the only new symbols and are used with those exact names in Task 3 steps 1, 3, and 5. Payload keys <code>error</code>, <code>errorCode</code>, <code>cause</code> match <code>InquiryErrorInfo</code> in Task 4.</li>
+        <li><strong>Review focus:</strong> items 1 and 4 are pinned by automated checks (Task 3 tests, Task 2 pod lint, Task 6 guard); items 2, 3, and 5 are pinned by documented manual checks in Task 7 and the README statement in Task 5. Converting 2 and 3 to XCTests is listed as a follow-up.</li>
+      </ul>
+    </section>
+
+    <footer>Checkbox state is stored only in this browser as a convenience. The Markdown plan in the repository is the source of truth for progress shared with other workers.</footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var KEY = 'persona-v3-plan-steps';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('ol.steps input[type="checkbox"]'));
+  var text = document.getElementById('progress-text');
+  var bar = document.getElementById('progress-bar');
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; }
+  }
+  function save(state) {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable; page still works */ }
+  }
+  function render() {
+    var done = 0;
+    boxes.forEach(function (b) {
+      var li = b.closest('li');
+      if (li) li.classList.toggle('done', b.checked);
+      if (b.checked) done++;
+    });
+    if (text) text.textContent = done + ' / ' + boxes.length + ' steps';
+    if (bar) bar.style.width = boxes.length ? Math.round(done / boxes.length * 100) + '%' : '0%';
+  }
+
+  var state = load();
+  boxes.forEach(function (b) {
+    b.checked = !!state[b.id];
+    b.addEventListener('change', function () {
+      state[b.id] = b.checked;
+      save(state);
+      render();
+    });
+  });
+  render();
+
+  document.querySelectorAll('.codewrap').forEach(function (wrap) {
+    var pre = wrap.querySelector('pre');
+    if (!pre) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', function () {
+      var src = pre.innerText;
+      function fallback() {
+        var range = document.createRange();
+        range.selectNodeContents(pre);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        btn.textContent = 'Selected';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(src).then(function () {
+          btn.textContent = 'Copied';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+        }, fallback);
+      } else {
+        fallback();
+      }
+    });
+    wrap.appendChild(btn);
+  });
+})();
+</script>
+</body>
+</html>

@@ -191,9 +191,7 @@ extension PersonaPlugin: InquiryDelegate {
     }
 
     public func inquiryError(_ error: PersonaError) {
-        notifyListeners("inquiryError", data: [
-            "error": error.debugDescription
-        ])
+        notifyListeners("inquiryError", data: PersonaErrorMapper.payload(for: error))
     }
 }
 

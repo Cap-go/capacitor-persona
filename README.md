@@ -20,7 +20,7 @@ Launch [Persona Inquiry](https://docs.withpersona.com/docs/inquiry-overview) flo
 - Start a Persona Inquiry from a template ID, template version, or existing inquiry ID
 - Prefill inquiry fields and set sandbox or production environment
 - Receive `inquiryComplete`, `inquiryCanceled`, and `inquiryError` events in the WebView layer
-- Native Persona SDK integration on iOS (`PersonaInquirySDK2`) and Android (`com.withpersona.sdk2:inquiry`)
+- Native Persona SDK integration on iOS (`PersonaInquirySDK2` 3.x) and Android (`com.withpersona.sdk2:inquiry` 2.x)
 
 ## Install
 
@@ -79,19 +79,24 @@ Use Persona webhooks on your backend for authoritative verification status. SDK 
 ## iOS setup
 
 1. Run `npx cap sync ios`.
-2. Ensure iOS deployment target is **15.0** or newer (matches the plugin podspec).
-3. Add usage descriptions to `ios/App/App/Info.plist` (Persona may use camera, location, and Bluetooth during verification):
+2. Ensure the iOS deployment target is **15.0** or newer (matches the plugin podspec and `Package.swift`).
+3. Build with **Xcode 26.2 or newer**. Persona 3.x ships as a binary XCFramework whose Swift interface is produced by a current Swift 6 toolchain; older Xcode releases are not verified.
+4. Add usage descriptions to `ios/App/App/Info.plist`. Persona requires camera and location strings for every template, and microphone when a template records video:
 
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>We use the camera to verify your identity.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>We use your location during identity verification.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>We use the microphone when a verification records video.</string>
 <key>NSBluetoothAlwaysUsageDescription</key>
 <string>We use Bluetooth during identity verification when required.</string>
 ```
 
-4. CocoaPods: the plugin podspec pulls `PersonaInquirySDK2` **2.41.2**. Swift Package Manager projects resolve `inquiry-ios-2` via the plugin `Package.swift`.
+Templates that use NFC additionally need `NFCReaderUsageDescription`, the NFC Tag Reading capability, and the ISO7816 application identifiers listed in Persona's [iOS integration guide](https://docs.withpersona.com/ios-sdk-v2-integration-guide).
+
+5. Dependency resolution: Swift Package Manager projects (the Capacitor 8 default) resolve `inquiry-ios-2` at exactly **3.11.0** through the plugin `Package.swift`. CocoaPods projects resolve the `PersonaInquirySDK2` **3.11.0** pod (Persona resumed CocoaPods publishing with 3.8.0).
 
 ## Android setup
 
@@ -108,7 +113,16 @@ allprojects {
 }
 ```
 
-3. The plugin library targets **minSdk 24** and depends on `com.withpersona.sdk2:inquiry` (default **2.32.1**, overridable with `personaInquiryVersion` in Gradle).
+3. The plugin library targets **minSdk 24** and depends on `com.withpersona.sdk2:inquiry` (default **2.59.1**, overridable with `personaInquiryVersion` in Gradle). Versions 2.56.0 and newer are published to Maven Central only; the Persona Maven repository above still serves older pins.
+
+## Upgrading from 8.1.x
+
+Plugin 8.2.0 moves iOS to Persona Inquiry SDK 3.11.0 and Android to 2.59.1. No JavaScript changes are required.
+
+- `inquiryError` events on iOS now include `errorCode` (and `cause` for misconfigured inquiries); see `InquiryErrorInfo` below.
+- `locale` now works together with `templateVersion` on iOS.
+- iOS builds need Xcode 26.2 or newer.
+- Persona removed client-side theming in SDK 3; configure appearance in the Persona Dashboard Theme Editor.
 
 ## API
 
@@ -277,7 +291,9 @@ Environment where Persona should run.
 
 Construct a type with a set of properties K of type T
 
-<code>{ [P in K]: T; }</code>
+<code>{
+ [P in K]: T;
+ }</code>
 
 
 #### PersonaFieldValue

@@ -83,6 +83,20 @@ jobs:
       - name: Verify packed package in example app (iOS)
         shell: bash
         run: bash ./.github/scripts/verify-packed-example.sh ios
+  test_ios:
+    runs-on: macOS-latest
+    timeout-minutes: 10
+    name: 'iOS unit tests (simulator)'
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+      - name: Run XCTests on an iPhone simulator xcodebuild considers eligible
+        run: |
+          set -euo pipefail
+          udid="$(xcodebuild -showdestinations -scheme CapgoCapacitorPersona 2>/dev/null | grep 'platform:iOS Simulator' | grep 'name:iPhone' | tail -1 | sed -E 's/.*id:([0-9A-F-]+).*/\1/')"
+          test -n "$udid"
+          echo "Using simulator id: $udid"
+          xcodebuild test -scheme CapgoCapacitorPersona -destination "platform=iOS Simulator,id=$udid"
   web:
     runs-on: ubuntu-latest
     timeout-minutes: 10

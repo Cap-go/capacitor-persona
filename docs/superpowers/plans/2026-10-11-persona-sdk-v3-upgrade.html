@@ -364,12 +364,12 @@
           <tbody>
             <tr><td><code>Package.swift</code></td><td>Modify line 14 (pin), line 27 (test deps)</td><td>SwiftPM pin to Persona 3.11.0; let tests import <code>Persona2</code></td></tr>
             <tr><td><code>CapgoCapacitorPersona.podspec</code></td><td>Modify line 17</td><td>CocoaPods pin to 3.11.0</td></tr>
-            <tr><td><code>ios/Sources/PersonaPlugin/PersonaPlugin.swift</code></td><td>Modify <code>buildInquiry</code> 32–103, <code>inquiryError</code> 206–210, <code>PersonaPluginError</code> 213–234</td><td>Builder-only construction; typed error forwarding</td></tr>
+            <tr><td><code>ios/Sources/PersonaPlugin/PersonaPlugin.swift</code></td><td>Modify <code>buildInquiry</code> 32-103, <code>inquiryError</code> 206-210, <code>PersonaPluginError</code> 213-234</td><td>Builder-only construction; typed error forwarding</td></tr>
             <tr><td><code>ios/Sources/PersonaPlugin/PersonaErrorMapper.swift</code></td><td>Create</td><td>Pure mapping <code>PersonaError</code> to the <code>inquiryError</code> payload</td></tr>
             <tr><td><code>ios/Tests/PersonaPluginTests/PersonaErrorMapperTests.swift</code></td><td>Create</td><td>XCTests for the mapper</td></tr>
             <tr><td><code>ios/Tests/PersonaPluginTests/PersonaPluginTests.swift</code></td><td>Delete</td><td>Placeholder replaced by real tests</td></tr>
-            <tr><td><code>src/definitions.ts</code></td><td>Modify lines 41–46, 104–111</td><td>JSDoc: locale works with <code>templateVersion</code> on iOS; document <code>errorCode</code> values</td></tr>
-            <tr><td><code>README.md</code></td><td>Modify lines 23, 79–94, 96–111; add "Upgrading from 8.1.x"</td><td>Setup instructions, SDK versions, Xcode note, Info.plist keys</td></tr>
+            <tr><td><code>src/definitions.ts</code></td><td>Modify lines 41-46, 104-111</td><td>JSDoc: locale works with <code>templateVersion</code> on iOS; document <code>errorCode</code> values</td></tr>
+            <tr><td><code>README.md</code></td><td>Modify lines 23, 79-94, 96-111; add "Upgrading from 8.1.x"</td><td>Setup instructions, SDK versions, Xcode note, Info.plist keys</td></tr>
             <tr><td><code>android/build.gradle</code></td><td>Modify line 7</td><td>Default <code>personaInquiryVersion</code> 2.59.1</td></tr>
             <tr><td><code>scripts/check-persona-sdk-pin.mjs</code></td><td>Create</td><td>Fail CI when podspec and <code>Package.swift</code> disagree</td></tr>
             <tr><td><code>package.json</code></td><td>Add script after line 52</td><td><code>check:persona-pin</code></td></tr>
@@ -417,7 +417,7 @@ java -version          # expect 21.x</code></pre></div>
         <li><span class="check"><input type="checkbox" id="t1s2" aria-label="Task 1 step 2 done"></span>
           <div class="step-title">Install dependencies</div>
           <div class="step-body">
-            <div class="codewrap"><pre><code>cd /Users/parlaybillm3/code/ParlayPlay/capacitor-persona
+            <div class="codewrap"><pre><code>cd /path/to/capacitor-persona
 bun install</code></pre></div>
             <p class="expect"><strong>Expected:</strong> completes without changing <code>bun.lock</code> (<code>git status --short</code> prints nothing).</p>
           </div></li>
@@ -466,7 +466,7 @@ git status --short            # empty</code></pre></div>
           <div class="step-body">
             <p>In <code>Package.swift</code>, change line 14:</p>
             <div class="codewrap"><pre><code>        .package(url: "https://github.com/persona-id/inquiry-ios-2.git", exact: "3.11.0")</code></pre></div>
-            <p>and change the test target (lines 25–29) to:</p>
+            <p>and change the test target (lines 25-29) to:</p>
             <div class="codewrap"><pre><code>        .testTarget(
             name: "PersonaPluginTests",
             dependencies: [
@@ -526,7 +526,7 @@ PersonaPlugin.swift:205: error: type 'PersonaPlugin' does not conform to protoco
         <li><span class="check"><input type="checkbox" id="t2s5" aria-label="Task 2 step 5 done"></span>
           <div class="step-title">Update the delegate error method to the typed signature (minimal payload for now)</div>
           <div class="step-body">
-            <p>Replace lines 206–210:</p>
+            <p>Replace lines 206-210:</p>
             <div class="codewrap"><pre><code>    public func inquiryError(_ error: PersonaError) {
         notifyListeners("inquiryError", data: [
             "error": error.debugDescription
@@ -750,7 +750,7 @@ Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></di
       <div class="meta"><h4>Files</h4><ul><li>Modify: <code>src/definitions.ts:41-46</code>, <code>src/definitions.ts:104-111</code></li><li>Regenerated: <code>README.md</code> (docgen section only)</li></ul></div>
       <ol class="steps">
         <li><span class="check"><input type="checkbox" id="t4s1" aria-label="Task 4 step 1 done"></span>
-          <div class="step-title">Fix the <code>locale</code> doc comment (lines 41–46)</div>
+          <div class="step-title">Fix the <code>locale</code> doc comment (lines 41-46)</div>
           <div class="step-body">
             <p>Replace the comment so it reads:</p>
             <div class="codewrap"><pre><code>  /**
@@ -762,7 +762,7 @@ Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></di
   locale?: string;</code></pre></div>
           </div></li>
         <li><span class="check"><input type="checkbox" id="t4s2" aria-label="Task 4 step 2 done"></span>
-          <div class="step-title">Document <code>errorCode</code> and <code>cause</code> (lines 104–111)</div>
+          <div class="step-title">Document <code>errorCode</code> and <code>cause</code> (lines 104-111)</div>
           <div class="step-body">
             <div class="codewrap"><pre><code>/**
  * Payload emitted when an Inquiry errors.
@@ -829,7 +829,7 @@ Co-Authored-By: Claude Fable 5.1 &lt;noreply@anthropic.com&gt;"</code></pre></di
             <div class="codewrap"><pre><code>- Native Persona SDK integration on iOS (`PersonaInquirySDK2` 3.x) and Android (`com.withpersona.sdk2:inquiry` 2.x)</code></pre></div>
           </div></li>
         <li><span class="check"><input type="checkbox" id="t5s2" aria-label="Task 5 step 2 done"></span>
-          <div class="step-title">Rewrite the iOS setup section (lines 79–94)</div>
+          <div class="step-title">Rewrite the iOS setup section (lines 79-94)</div>
           <div class="step-body">
             <div class="codewrap"><pre><code>## iOS setup
 
@@ -987,7 +987,7 @@ console.log(`[persona-pin] OK iOS PersonaInquirySDK2 ${spmVersion}, Android com.
             <div class="codewrap"><pre><code>bun run check:persona-pin
 # expected: [persona-pin] OK iOS PersonaInquirySDK2 3.11.0, Android com.withpersona.sdk2:inquiry default 2.59.1
 
-FIX=/private/tmp/claude-501/-Users-parlaybillm3-code-ParlayPlay-capacitor-persona/cd1a7e03-0017-4580-ba54-6c13b86a989e/scratchpad/pin-fixture
+FIX="$(mktemp -d)/pin-fixture"
 rm -rf "$FIX" &amp;&amp; mkdir -p "$FIX/android"
 cp Package.swift "$FIX/" &amp;&amp; cp android/build.gradle "$FIX/android/"
 sed "s/'3.11.0'/'3.10.0'/" CapgoCapacitorPersona.podspec &gt; "$FIX/CapgoCapacitorPersona.podspec"

@@ -106,7 +106,7 @@ java -version          # expect 21.x
 - [ ] **Step 2: Install dependencies**
 
 ```bash
-cd /Users/parlaybillm3/code/ParlayPlay/capacitor-persona
+cd /path/to/capacitor-persona
 bun install
 ```
 
@@ -750,7 +750,7 @@ Add to `package.json` scripts, directly after `"check:cap9-deprecated"`:
 bun run check:persona-pin
 # expected: [persona-pin] OK iOS PersonaInquirySDK2 3.11.0, Android com.withpersona.sdk2:inquiry default 2.59.1
 
-FIX=/private/tmp/claude-501/-Users-parlaybillm3-code-ParlayPlay-capacitor-persona/cd1a7e03-0017-4580-ba54-6c13b86a989e/scratchpad/pin-fixture
+FIX="$(mktemp -d)/pin-fixture"
 rm -rf "$FIX" && mkdir -p "$FIX/android"
 cp Package.swift "$FIX/" && cp android/build.gradle "$FIX/android/"
 sed "s/'3.11.0'/'3.10.0'/" CapgoCapacitorPersona.podspec > "$FIX/CapgoCapacitorPersona.podspec"

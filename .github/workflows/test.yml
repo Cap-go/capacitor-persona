@@ -5,7 +5,9 @@ on:
     branches:
       - renovate/**
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - 'cursor/**'
   workflow_call:
 
 jobs:
@@ -84,12 +86,16 @@ jobs:
         shell: bash
         run: bash ./.github/scripts/verify-packed-example.sh ios
   test_ios:
+    permissions:
+      contents: read
     runs-on: macOS-latest
     timeout-minutes: 10
     name: 'iOS unit tests (simulator)'
     steps:
       - name: Check out
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Run XCTests on an iPhone simulator xcodebuild considers eligible
         run: |
           set -euo pipefail

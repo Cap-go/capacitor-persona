@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0"),
-        .package(url: "https://github.com/persona-id/inquiry-ios-2.git", exact: "2.41.2")
+        .package(url: "https://github.com/persona-id/inquiry-ios-2.git", exact: "3.11.0")
     ],
     targets: [
         .target(
@@ -24,7 +24,10 @@ let package = Package(
             path: "ios/Sources/PersonaPlugin"),
         .testTarget(
             name: "PersonaPluginTests",
-            dependencies: ["PersonaPlugin"],
+            dependencies: [
+                "PersonaPlugin",
+                .product(name: "PersonaInquirySDK2", package: "inquiry-ios-2")
+            ],
             path: "ios/Tests/PersonaPluginTests")
     ]
 )

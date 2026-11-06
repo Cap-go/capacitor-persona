@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}'
   s.ios.deployment_target = '15.0'
   s.dependency 'Capacitor'
-  s.dependency 'PersonaInquirySDK2', '2.41.2'
+  s.dependency 'PersonaInquirySDK2', '3.11.0'
   s.swift_version = '5.1'
 end

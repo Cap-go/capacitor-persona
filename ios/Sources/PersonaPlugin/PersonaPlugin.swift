@@ -61,45 +61,32 @@ public class PersonaPlugin: CAPPlugin, CAPBridgedPlugin {
             return builder.build()
         }
 
+        let templateBuilder: InquiryTemplateBuilder
         if let templateId {
-            let builder = Inquiry.from(templateId: templateId, delegate: self)
-            if let referenceId {
-                _ = builder.referenceId(referenceId)
-            }
-            if let accountId {
-                _ = builder.accountId(accountId)
-            }
-            if !fields.isEmpty {
-                _ = builder.fields(fields)
-            }
-            if let environment {
-                _ = builder.environment(environment)
-            }
-            if let locale {
-                _ = builder.locale(locale)
-            }
-            return builder.build()
+            templateBuilder = Inquiry.from(templateId: templateId, delegate: self)
+        } else if let templateVersion {
+            templateBuilder = Inquiry.from(templateVersion: templateVersion, delegate: self)
+        } else {
+            throw PersonaPluginError.missingIdentifier
         }
 
-        if let templateVersion {
-            if locale != nil {
-                throw PersonaPluginError.templateVersionLocaleUnsupported
-            }
-
-            guard let configuration = InquiryConfiguration.build(
-                templateVersion: templateVersion,
-                referenceId: referenceId,
-                accountId: accountId,
-                environment: environment,
-                fields: fields.isEmpty ? nil : fields
-            ) else {
-                throw PersonaPluginError.invalidConfiguration
-            }
-
-            return Inquiry(config: configuration, delegate: self)
+        if let referenceId {
+            _ = templateBuilder.referenceId(referenceId)
+        }
+        if let accountId {
+            _ = templateBuilder.accountId(accountId)
+        }
+        if !fields.isEmpty {
+            _ = templateBuilder.fields(fields)
+        }
+        if let environment {
+            _ = templateBuilder.environment(environment)
+        }
+        if let locale {
+            _ = templateBuilder.locale(locale)
         }
 
-        throw PersonaPluginError.missingIdentifier
+        return templateBuilder.build()
     }
 
     private func parseEnvironment(_ rawValue: String?) throws -> Environment? {
@@ -203,18 +190,14 @@ extension PersonaPlugin: InquiryDelegate {
         notifyListeners("inquiryCanceled", data: payload)
     }
 
-    public func inquiryError(_ error: any Error) {
-        notifyListeners("inquiryError", data: [
-            "error": error.localizedDescription
-        ])
+    public func inquiryError(_ error: PersonaError) {
+        notifyListeners("inquiryError", data: PersonaErrorMapper.payload(for: error))
     }
 }
 
 private enum PersonaPluginError: LocalizedError {
     case missingIdentifier
     case invalidEnvironment(String)
-    case invalidConfiguration
-    case templateVersionLocaleUnsupported
     case environmentNotAllowedForResume
 
     var errorDescription: String? {
@@ -223,10 +206,6 @@ private enum PersonaPluginError: LocalizedError {
             return "At least one of inquiryId, templateId, or templateVersion must be provided."
         case .invalidEnvironment(let value):
             return "Unsupported Persona environment '\(value)'. Use 'production' or 'sandbox'."
-        case .invalidConfiguration:
-            return "Unable to build a Persona inquiry configuration with the provided options."
-        case .templateVersionLocaleUnsupported:
-            return "The locale option is not supported when starting an inquiry with templateVersion on iOS."
         case .environmentNotAllowedForResume:
             return "The environment option cannot be used when resuming an inquiry by inquiryId."
         }
